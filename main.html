@@ -980,13 +980,14 @@ function renderXRPChart(labels, data) {
   });
 }
 
-// Fetch with automatic corsproxy.io fallback for restricted browsers (Tizen)
+// Pi proxy via Nabu Casa — serves pre-fetched JSON files with no CORS issues
+const PROXY = 'https://4tmcigbgkiuop9fthcbtlc3ye2hwtxhk.ui.nabu.casa/local';
+
 async function xFetch(url) {
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(7000) });
     if (r.ok) return r.json();
   } catch(e) {}
-  // fallback via corsproxy
   const r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(url), { signal: AbortSignal.timeout(7000) });
   return r2.json();
 }
@@ -996,7 +997,7 @@ async function loadXRP() {
     // OKX: most permissive CORS of any major exchange, no key needed
     let data = null;
     try {
-      const j = await xFetch('https://www.okx.com/api/v5/market/ticker?instId=XRP-USDT');
+      const j = await xFetch(PROXY + '/xrp.json');
       const t = j.data && j.data[0];
       if (t) {
         const price  = parseFloat(t.last);
@@ -1068,7 +1069,7 @@ async function loadXRP() {
 
       // Try OKX candles first (1H interval, last 24 candles)
       try {
-        const j = await xFetch('https://www.okx.com/api/v5/market/candles?instId=XRP-USDT&bar=30m&limit=48');
+        const j = await xFetch(PROXY + '/candles.json');
         if (j.data && j.data.length > 2) {
           const candles = j.data.reverse(); // OKX returns newest first
           chartPrices = candles.map(c => parseFloat(c[4]));
@@ -1285,7 +1286,7 @@ setInterval(rotateQuote, 60000);
 async function loadStripData() {
   try {
     // Use OKX for BTC and total — same permissive CORS
-    const j = await xFetch('https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT');
+    const j = await xFetch(PROXY + '/btc.json');
     const btcPrice = parseFloat(j.data[0].last);
 
     // Approximate BTC mcap and dominance using known circulating supply
