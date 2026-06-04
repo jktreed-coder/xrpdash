@@ -42,10 +42,10 @@
     overflow: hidden;
   }
 
-  /* ── Seamless Master Viewport (No Borders, Gaps, or Separator Lines) ── */
+  /* ── Master Viewport Framework (News shifted slightly right) ── */
   main {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.15fr 0.85fr; /* Shifts the column divider right to give the center more breathing room */
     grid-template-rows: 1.1fr 0.9fr;
     overflow: hidden;
     min-height: 0;
@@ -55,9 +55,8 @@
 
   #panel-xrp { grid-column: 1 / -1; grid-row: 1; }
   #panel-weather { grid-column: 1; grid-row: 2; }
-  #panel-news { grid-column: 2; grid-row: 2; }
+  #panel-news { grid-column: 2; grid-row: 2; padding-left: 3.5rem; } /* Gives extra space padding from the center zone */
 
-  /* Transparent panels to let the background elements seamlessly blend */
   .panel {
     background: transparent !important;
     backdrop-filter: none !important;
@@ -70,7 +69,7 @@
     z-index: 5;
   }
 
-  /* ── Master Background Layer: Pulsating Blue Cosmic Nebula ── */
+  /* ── Master Pulsating Background Nebula ── */
   .nebula-space-bg {
     position: absolute;
     top: 50%;
@@ -94,7 +93,7 @@
     50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.08); }
   }
 
-  /* ── Dedicated Weather Background Nebula ── */
+  /* ── Weather Focal Point Ambient Light ── */
   .weather-nebula-glow {
     position: absolute;
     inset: 0;
@@ -108,7 +107,7 @@
     z-index: 2;
   }
 
-  /* Universal Global Floating Space Dust Canvas */
+  /* Universal Space Dust Layer */
   #global-particles {
     position: absolute;
     top: 0;
@@ -126,7 +125,6 @@
     margin-bottom: 1.5rem;
     flex-shrink: 0;
   }
-
   .xrp-greeting-row .header-time { margin-left: auto; }
   .greeting { font-size: 1rem; font-weight: 700; color: var(--gold); letter-spacing: 0.04em; text-transform: uppercase; }
   .header-time { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; }
@@ -147,21 +145,21 @@
   .dot-live { background: var(--green) !important; animation: pulse 2s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  /* ── XRP Layout Config ── */
+  /* ── XRP Components ── */
   .xrp-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.5rem; flex-shrink: 0; }
   .xrp-price-row { display: flex; align-items: baseline; gap: 1rem; position: relative; z-index: 5; }
   .xrp-price { font-size: 3.2rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
   .badge { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 500; }
   .badge-green { background: rgba(76,175,133,0.15); color: var(--green); }
-  .badge-red   { background: rgba(224,92,92,0.15);  color: var(--red); }
+  .badge-red { background: rgba(224,92,92,0.15); color: var(--red); }
   .xrp-meta { display: flex; gap: 2rem; align-items: baseline; }
   .xrp-meta-item { font-size: 0.72rem; color: var(--muted); }
-  .xrp-meta-val  { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
+  .xrp-meta-val { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
   .xrp-chart-wrap { flex: 1; position: relative; min-height: 120px; margin: 0.5rem -0.25rem 0; z-index: 5; }
   .xrp-portfolio { font-size: 0.72rem; color: rgba(201,168,76,0.7); letter-spacing: 0.02em; margin-top: 0.15rem; }
   .xrp-portfolio span { color: var(--gold); font-weight: 600; }
 
-  /* ── Weather Panel Adjustments ── */
+  /* ── Weather Matrix Layout ── */
   #sphere-wrap {
     position: absolute;
     inset: 0;
@@ -197,7 +195,7 @@
   .fx-temp { font-size: 0.68rem; color: rgba(210,230,255,0.7); font-weight: 500; }
   #panel-weather .panel-label { position: absolute; top: 1.25rem; left: 1.75rem; z-index: 20; }
 
-  /* ── NRK News Layout Configuration ── */
+  /* ── News List Layout ── */
   .news-list { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; flex: 1; }
   .news-item { padding: 0.5rem 0; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
   .news-item:first-child { padding-top: 0; }
@@ -207,7 +205,7 @@
   .news-time { font-size: 0.6rem; color: rgba(150,180,255,0.38); margin-top: 0.2rem; }
   .news-loading { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 2rem 0; }
 
-  /* ── Footer UI ── */
+  /* ── Bottom Widget Strip & Footer ── */
   footer {
     grid-column: 1 / -1;
     background: var(--surface);
@@ -227,10 +225,9 @@
   .status-dot.ok { background: var(--green); }
   .status-dot.err { background: var(--red); }
   .val-green { color: var(--green); }
-  .val-red   { color: var(--red); }
-  .val-gold  { color: var(--gold); }
+  .val-red { color: var(--red); }
+  .val-gold { color: var(--gold); }
 
-  /* ── Bottom Widget Strip ── */
   #info-strip {
     display: flex;
     align-items: center;
@@ -257,6 +254,7 @@
   @media (max-width: 900px) {
     main { grid-template-columns: 1fr; grid-template-rows: auto; }
     #panel-xrp { grid-column: 1 / -1; }
+    #panel-news { padding-left: 2rem; }
   }
 </style>
 </head>
@@ -393,21 +391,21 @@ function setStatus(id, ok) {
 
 // ── Clock Loop ────────────────────────────────────────────────────────────────
 function tick() {
-  const now  = new Date();
+  const now = new Date();
   const hour = now.getHours();
   let greet = 'Good night, Mike';
-  if (hour >= 6  && hour < 12) greet = 'Good morning, Mike';
+  if (hour >= 6 && hour < 12) greet = 'Good morning, Mike';
   else if (hour >= 12 && hour < 18) greet = 'Good afternoon, Mike';
   else if (hour >= 18 && hour < 23) greet = 'Good evening, Mike';
 
   el('hdr-greeting').textContent = greet;
-  el('hdr-time').textContent     = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  el('hdr-date').textContent     = now.toLocaleDateString('en-GB', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  el('hdr-time').textContent = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  el('hdr-date').textContent = now.toLocaleDateString('en-GB', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 }
 tick();
 setInterval(tick, 1000);
 
-// ── Portfolio Calculator ─────────────────────────────────────────────────────
+// ── Portfolio Math Engine ────────────────────────────────────────────────────
 function updatePortfolio(price) {
   var totalTokens = 7800; 
   var totalValue = totalTokens * price;
@@ -416,7 +414,7 @@ function updatePortfolio(price) {
   if (el('strip-portfolio')) el('strip-portfolio').textContent = formattedVal;
 }
 
-// ── Network Framework ────────────────────────────────────────────────────────
+// ── Network Proxies ──────────────────────────────────────────────────────────
 var PROXY = 'https://4tmcigbgkiuop9fthcbtlc3ye2hwtxhk.ui.nabu.casa/local';
 
 function xhrGet(url) {
@@ -429,7 +427,7 @@ function xhrGet(url) {
         try { resolve(JSON.parse(xhr.responseText)); } catch(e) { resolve(xhr.responseText); }
       } else { reject(new Error('HTTP ' + xhr.status)); }
     };
-    xhr.onerror = function() { reject(new Error('XHR connection drop')); };
+    xhr.onerror = function() { reject(new Error('Network loss')); };
     xhr.ontimeout = function() { reject(new Error('timeout')); };
     xhr.send();
   });
@@ -441,7 +439,7 @@ function xFetch(url) {
   });
 }
 
-// ── XRP Telemetry & Line Charts ──────────────────────────────────────────────
+// ── XRP Telemetry Data & Graphs ──────────────────────────────────────────────
 let xrpChart = null;
 function renderXRPChart(labels, data) {
   const canvas = el('xrp-chart');
@@ -486,18 +484,18 @@ function loadXRP() {
     var t = arr && arr[0];
     if (!t || !t.price_usd) throw new Error('bad payload');
     renderXRPData({
-      price:  parseFloat(t.price_usd),
-      high:   parseFloat(t.high24h) || parseFloat(t.price_usd) * 1.01,
-      low:    parseFloat(t.low24h)  || parseFloat(t.price_usd) * 0.99,
-      vol:    parseFloat(t.volume24),
+      price: parseFloat(t.price_usd),
+      high: parseFloat(t.high24h) || parseFloat(t.price_usd) * 1.01,
+      low: parseFloat(t.low24h) || parseFloat(t.price_usd) * 0.99,
+      vol: parseFloat(t.volume24),
       change: parseFloat(t.percent_change_24h),
-      mcap:   parseFloat(t.market_cap_usd)
+      mcap: parseFloat(t.market_cap_usd)
     });
   }).catch(function() {
     xFetch(PROXY + '/xrp.json').then(function(j) {
       var t = j.data && j.data[0];
       var price = parseFloat(t.last);
-      var open  = parseFloat(t.open24h);
+      var open = parseFloat(t.open24h);
       renderXRPData({ price: price, high: parseFloat(t.high24h), low: parseFloat(t.low24h), vol: parseFloat(t.volCcy24h), change: ((price - open) / open) * 100, mcap: null });
     }).catch(function() {
       el('xrp-price').textContent = '$—';
@@ -520,13 +518,13 @@ function loadXRP() {
 function renderXRPData(data) {
   updatePortfolio(data.price);
   el('xrp-price').textContent = '$' + data.price.toFixed(4);
-  el('xrp-high').textContent  = '$' + data.high.toFixed(4);
-  el('xrp-low').textContent   = '$' + data.low.toFixed(4);
-  el('xrp-vol').textContent   = fmtM(data.vol);
-  el('xrp-mcap').textContent  = data.mcap ? fmtM(data.mcap) : '—';
+  el('xrp-high').textContent = '$' + data.high.toFixed(4);
+  el('xrp-low').textContent = '$' + data.low.toFixed(4);
+  el('xrp-vol').textContent = fmtM(data.vol);
+  el('xrp-mcap').textContent = data.mcap ? fmtM(data.mcap) : '—';
   var badge = el('xrp-badge');
   badge.textContent = (data.change >= 0 ? '+' : '') + fmt(data.change) + '%';
-  badge.className   = 'badge ' + (data.change >= 0 ? 'badge-green' : 'badge-red');
+  badge.className = 'badge ' + (data.change >= 0 ? 'badge-green' : 'badge-red');
   setStatus('xrp', true);
 
   if (el('footer-updated')) {
@@ -548,7 +546,7 @@ function loadGlobalMacroData() {
   });
 }
 
-// ── Weather System ────────────────────────────────────────────────────────────
+// ── Weather Forecast ──
 const WX_CODES = { 0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️', 45:'🌫️', 48:'🌫️', 51:'🌦️', 53:'🌦️', 55:'🌦️', 61:'🌧️', 63:'🌧️', 65:'🌧️', 71:'❄️', 73:'❄️', 75:'❄️', 95:'⛈️' };
 const WX_DESCS = { 0:'Clear sky', 1:'Mainly clear', 2:'Partly cloudy', 3:'Overcast', 45:'Fog', 61:'Light rain', 63:'Rain', 73:'Snow', 95:'Thunderstorm' };
 
@@ -559,20 +557,20 @@ async function loadWeather() {
     const d = await r.json();
     const c = d.current;
 
-    el('wx-temp').textContent   = Math.round(c.temperature_2m);
-    el('wx-feels').textContent  = Math.round(c.apparent_temperature) + '°C';
-    el('wx-wind').textContent   = Math.round(c.wind_speed_10m) + ' m/s';
-    el('wx-humid').textContent  = c.relative_humidity_2m + '%';
-    el('wx-pres').textContent   = Math.round(c.surface_pressure) + ' hPa';
-    el('wx-icon').textContent   = WX_CODES[c.weather_code] || '🌡️';
-    el('wx-desc').textContent   = WX_DESCS[c.weather_code] || 'Unknown';
+    el('wx-temp').textContent = Math.round(c.temperature_2m);
+    el('wx-feels').textContent = Math.round(c.apparent_temperature) + '°C';
+    el('wx-wind').textContent = Math.round(c.wind_speed_10m) + ' m/s';
+    el('wx-humid').textContent = c.relative_humidity_2m + '%';
+    el('wx-pres').textContent = Math.round(c.surface_pressure) + ' hPa';
+    el('wx-icon').textContent = WX_CODES[c.weather_code] || '🌡️';
+    el('wx-desc').textContent = WX_DESCS[c.weather_code] || 'Unknown';
     setStatus('wx', true);
 
     const times = d.hourly.time;
     const temps = d.hourly.temperature_2m;
     const codes = d.hourly.weather_code;
-    const nowH  = new Date(c.time).getHours();
-    const fc    = el('wx-forecast-bar');
+    const nowH = new Date(c.time).getHours();
+    const fc = el('wx-forecast-bar');
     
     if (fc) {
       fc.innerHTML = '';
@@ -594,13 +592,13 @@ async function loadWeather() {
   }
 }
 
-// ── News Parsing Module ──────────────────────────────────────────────────────
+// ── RSS News Fetcher ──
 function loadNRKNews() {
   xFetch('https://www.nrk.no/nyheter/siste.rss').then(function(xmlText) {
     if (!xmlText) return;
     var parser = new DOMParser();
     var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-    var items  = xmlDoc.getElementsByTagName('item');
+    var items = xmlDoc.getElementsByTagName('item');
     var nl = el('news-list');
     if (!nl) return;
     nl.innerHTML = ''; 
@@ -629,14 +627,14 @@ function loadNRKNews() {
   });
 }
 
-// ── Seamless Global Space Dust Particle Simulation Engine ────────────────────
+// ── Multi-Tier Kinetic Space Dust Simulation ──
 function initSpaceDust() {
   var canvas = el('global-particles');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
   
   var particles = [];
-  var maxParticles = 45; // Smooth distribution across full 4K layout space
+  var maxParticles = 45; 
 
   function resize() {
     canvas.width = window.innerWidth;
@@ -646,13 +644,18 @@ function initSpaceDust() {
   window.addEventListener('resize', resize);
 
   function createParticle(initY) {
+    // 50% of the particles run 30% faster to establish a layered background depth field
+    var isFasterTier = Math.random() > 0.5;
+    var baseSpeedY = -(Math.random() * 0.035 + 0.015);
+    var speedMultiplier = isFasterTier ? 1.35 : 1.0;
+
     return {
       x: Math.random() * canvas.width,
       y: initY ? Math.random() * canvas.height : canvas.height + 10,
-      size: Math.random() * 1.0 + 0.3, 
-      speedY: -(Math.random() * 0.04 + 0.015), // Ultra-slow drift speed simulation
-      speedX: (Math.random() * 0.02 - 0.01), 
-      opacity: Math.random() * 0.4 + 0.1 
+      size: Math.random() * 0.9 + 0.3, // Kept small and crisp
+      speedY: baseSpeedY * speedMultiplier, 
+      speedX: (Math.random() * 0.02 - 0.01) * speedMultiplier, 
+      opacity: isFasterTier ? (Math.random() * 0.45 + 0.15) : (Math.random() * 0.3 + 0.1)
     };
   }
 
@@ -669,7 +672,7 @@ function initSpaceDust() {
       
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(235, 242, 255, ' + p.opacity + ')'; // Premium icy white-blue stardust accent
+      ctx.fillStyle = 'rgba(235, 242, 255, ' + p.opacity + ')'; 
       ctx.fill();
       
       if (p.y < -10 || p.x < -10 || p.x > canvas.width + 10) {
@@ -681,7 +684,7 @@ function initSpaceDust() {
   animate();
 }
 
-// ── Initialization Engine ───────────────────────────────────────────────────
+// ── Initialization Engine ──
 window.onload = function() {
   loadXRP();
   loadWeather();
