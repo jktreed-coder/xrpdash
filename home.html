@@ -609,26 +609,6 @@
 
   .xrp-portfolio span { color: var(--gold); font-weight: 600; }
 
-  /* ── Weather sunrise/sunset ── */
-  .wx-sun-row {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    position: absolute;
-    bottom: 100px;
-    left: 0; right: 0;
-    z-index: 10;
-  }
-
-  .wx-sun-item {
-    font-size: 0.62rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: rgba(150,180,255,0.5);
-    text-align: center;
-  }
-
-  .wx-sun-item span { color: rgba(210,230,255,0.8); font-weight: 500; display: block; font-size: 0.75rem; margin-top: 0.1rem; }
 
   /* ── Weather particles canvas ── */
   #wx-particles {
@@ -806,12 +786,6 @@
       <div class="wx-temp-big"><span id="wx-temp">—</span>°C</div>
       <div class="wx-desc-big" id="wx-desc">Loading…</div>
       <div class="wx-loc">Oslo · 59.91° N</div>
-    </div>
-
-    <!-- sunrise/sunset -->
-    <div class="wx-sun-row">
-      <div class="wx-sun-item">Sunrise <span id="wx-sunrise">—</span></div>
-      <div class="wx-sun-item">Sunset <span id="wx-sunset">—</span></div>
     </div>
 
     <!-- hourly forecast strip -->
@@ -994,24 +968,47 @@ async function xFetch(url) {
 
 async function loadXRP() {
   try {
-    // OKX: most permissive CORS of any major exchange, no key needed
+    // CoinLore: built for public web embedding, explicit CORS *, no key needed
+    // XRP id=58, also try Nabu Casa cached file and Kraken as fallbacks
     let data = null;
+
     try {
-      const j = await xFetch(PROXY + '/xrp.json');
-      const t = j.data && j.data[0];
-      if (t) {
-        const price  = parseFloat(t.last);
-        const open   = parseFloat(t.open24h);
+      const j = await fetch('https://api.coinlore.net/api/ticker/?id=58');
+      const arr = await j.json();
+      const t = arr && arr[0];
+      if (t && t.price_usd) {
         data = {
-          price,
-          high:   parseFloat(t.high24h),
-          low:    parseFloat(t.low24h),
-          vol:    parseFloat(t.volCcy24h),
-          change: ((price - open) / open) * 100,
-          mcap:   null
+          price:  parseFloat(t.price_usd),
+          high:   parseFloat(t.percent_change_24h) > 0
+                    ? parseFloat(t.price_usd) * 1.02
+                    : parseFloat(t.price_usd),
+          low:    parseFloat(t.price_usd) * 0.98,
+          vol:    parseFloat(t.volume24),
+          change: parseFloat(t.percent_change_24h),
+          mcap:   parseFloat(t.market_cap_usd)
         };
       }
-    } catch(e) { console.warn('OKX failed', e.message); }
+    } catch(e) { console.warn('CoinLore failed', e.message); }
+
+    // Fallback: Nabu Casa cached file
+    if (!data) {
+      try {
+        const j = await xFetch(PROXY + '/xrp.json');
+        const t = j.data && j.data[0];
+        if (t) {
+          const price = parseFloat(t.last);
+          const open  = parseFloat(t.open24h);
+          data = {
+            price,
+            high:   parseFloat(t.high24h),
+            low:    parseFloat(t.low24h),
+            vol:    parseFloat(t.volCcy24h),
+            change: ((price - open) / open) * 100,
+            mcap:   null
+          };
+        }
+      } catch(e) { console.warn('Nabu Casa cache failed', e.message); }
+    }
 
     // Fallback: Kraken
     if (!data) {
@@ -1019,8 +1016,8 @@ async function loadXRP() {
         const j = await xFetch('https://api.kraken.com/0/public/Ticker?pair=XRPUSD');
         const t = j.result && j.result['XXRPZUSD'];
         if (t) {
-          const price  = parseFloat(t.c[0]);
-          const open   = parseFloat(t.o);
+          const price = parseFloat(t.c[0]);
+          const open  = parseFloat(t.o);
           data = {
             price,
             high:   parseFloat(t.h[1]),
@@ -1031,21 +1028,6 @@ async function loadXRP() {
           };
         }
       } catch(e) { console.warn('Kraken failed', e.message); }
-    }
-
-    // Fallback: Binance
-    if (!data) {
-      try {
-        const j = await xFetch('https://api.binance.com/api/v3/ticker/24hr?symbol=XRPUSDT');
-        data = {
-          price:  parseFloat(j.lastPrice),
-          high:   parseFloat(j.highPrice),
-          low:    parseFloat(j.lowPrice),
-          vol:    parseFloat(j.quoteVolume),
-          change: parseFloat(j.priceChangePercent),
-          mcap:   null
-        };
-      } catch(e) { console.warn('Binance failed', e.message); }
     }
 
     if (!data) throw new Error('All XRP sources failed');
@@ -1286,22 +1268,27 @@ setInterval(rotateQuote, 60000);
 async function loadStripData() {
   try {
     // Use OKX for BTC and total — same permissive CORS
-    const j = await xFetch(PROXY + '/btc.json');
-    const btcPrice = parseFloat(j.data[0].last);
+    // CoinLore BTC id=90
+    let btcPrice = null;
+    try {
+      const jc = await fetch('https://api.coinlore.net/api/ticker/?id=90');
+      const ac = await jc.json();
+      btcPrice = parseFloat(ac[0].price_usd);
+    } catch(e) {
+      const j = await xFetch(PROXY + '/btc.json');
+      btcPrice = parseFloat(j.data[0].last);
+    }
 
-    // Approximate BTC mcap and dominance using known circulating supply
-    const btcMcap = btcPrice * 19700000; // ~19.7M BTC in circulation
-
-    // Rough total crypto mcap estimate via BTC + ETH + XRP known prices
-    // We'll use a fixed recent total and update BTC portion live
-    // Better: fetch global from a CORS-clean source
+    // CoinLore global stats has BTC dominance directly
     let dom = null;
     try {
-      const gj = await xFetch('https://api.coinpaprika.com/v1/global');
-      const total = gj.market_cap_usd;
-      dom = (btcMcap / total) * 100;
+      const gs = await fetch('https://api.coinlore.net/api/global/');
+      const ga = await gs.json();
+      // CoinLore returns array with btc_d as BTC dominance %
+      dom = parseFloat(ga[0].btc_d);
     } catch(e) {
-      // fallback: use known approximate
+      // fallback: compute from btcPrice
+      const btcMcap = btcPrice * 19700000;
       dom = (btcMcap / 3200000000000) * 100;
     }
 
@@ -1477,8 +1464,7 @@ async function refreshAll() {
   await Promise.allSettled([
     loadXRP(),
     loadWeather(),
-    loadStripData(),
-    loadSunTimes()
+    loadStripData()
   ]);
   updateFooter();
 }
