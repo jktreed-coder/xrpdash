@@ -22,9 +22,7 @@
     --green: #4caf85;
     --red: #e05c5c;
     --blue: #5b9bd5;
-    --font-serif: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --font-sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --font-mono:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
 
   html, body {
@@ -59,10 +57,7 @@
     margin-left: auto;
   }
 
-  .header-left { display: flex; align-items: baseline; gap: 1.5rem; }
-
   .greeting {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 1rem;
     font-weight: 700;
     color: var(--gold);
@@ -71,19 +66,18 @@
   }
 
   .header-time {
-    font-family: var(--font-sans);
     font-size: 0.75rem;
     color: var(--muted);
     letter-spacing: 0.05em;
   }
 
   .header-date {
-    font-family: var(--font-sans);
     font-size: 0.75rem;
     color: var(--muted);
     letter-spacing: 0.02em;
   }
 
+  /* Unifies the dashboard background into dark deep space */
   main {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -94,14 +88,17 @@
     min-height: 0;
     position: relative;
     z-index: 3;
+    background-color: #050507; 
   }
 
   #panel-xrp { grid-column: 1 / -1; grid-row: 1; }
-  #panel-weather { grid-column: 1; grid-row: 2; }
+  #panel-weather { grid-column: 1; grid-row: 2; background: transparent !important; }
   #panel-news { grid-column: 2; grid-row: 2; }
 
+  /* Make all panels transparent so the single background nebula shines through */
   .panel {
-    background: var(--bg);
+    background: rgba(10, 10, 11, 0.4); 
+    backdrop-filter: blur(4px); 
     padding: 1.5rem 2rem;
     position: relative;
     overflow: hidden;
@@ -111,8 +108,39 @@
     z-index: 3;
   }
 
+  /* ── Massive Unified Blue Nebula Layer ── */
+  .nebula-space-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    height: 90vh;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+      rgba(24, 76, 196, 0.45) 0%, 
+      rgba(14, 42, 128, 0.25) 35%, 
+      rgba(8, 24, 74, 0.08) 60%, 
+      transparent 80%
+    );
+    filter: blur(80px); 
+    pointer-events: none;
+    z-index: 1; 
+    animation: nebulaBreathe60s 60s ease-in-out infinite;
+  }
+
+  @keyframes nebulaBreathe60s {
+    0%, 100% { 
+      opacity: 0.15; 
+      transform: translate(-50%, -50%) scale(0.90); 
+    }
+    50% { 
+      opacity: 0.85; 
+      transform: translate(-50%, -50%) scale(1.15); 
+    }
+  }
+
   .panel-label {
-    font-family: var(--font-sans);
     font-size: 0.65rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -153,10 +181,11 @@
     display: flex;
     align-items: baseline;
     gap: 1rem;
+    position: relative; 
+    z-index: 1;
   }
 
   .xrp-price {
-    font-family: var(--font-sans);
     font-size: 3.2rem;
     font-weight: 700;
     line-height: 1;
@@ -164,7 +193,6 @@
   }
 
   .badge {
-    font-family: var(--font-sans);
     font-size: 0.7rem;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
@@ -180,43 +208,25 @@
     align-items: baseline;
   }
 
-  .xrp-meta-item { font-family: var(--font-sans); font-size: 0.72rem; color: var(--muted); }
+  .xrp-meta-item { font-size: 0.72rem; color: var(--muted); }
   .xrp-meta-val  { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
-
-  #panel-xrp {
-    position: relative;
-    overflow: hidden;
-  }
-
-  #panel-xrp::before {
-    content: '';
-    position: absolute;
-    bottom: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    height: 260px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(30,80,200,0.45) 0%, rgba(10,30,120,0.2) 45%, transparent 70%);
-    filter: blur(40px);
-    pointer-events: none;
-    z-index: 0;
-    animation: glowBreathe 30s ease-in-out infinite;
-  }
-
-  .xrp-header, .xrp-price-row { position: relative; z-index: 1; }
 
   .xrp-chart-wrap {
     flex: 1;
     position: relative;
     min-height: 140px;
     margin: 0.5rem -0.25rem 0;
-    z-index: 1;
+    z-index: 2;
   }
 
-  .xrp-chart-wrap canvas { width: 100% !important; height: 100% !important; }
+  #xrp-particles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
 
-  /* ── Weather Sphere ── */
+  /* ── Weather Panel ── */
   #panel-weather {
     grid-column: 1;
     grid-row: 2;
@@ -239,20 +249,6 @@
     height: 100%;
   }
 
-  #sphere-halo {
-    position: absolute;
-    width: 340px;
-    height: 340px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(30,80,180,0.55) 0%, rgba(10,30,100,0.3) 40%, transparent 70%);
-    filter: blur(38px);
-    pointer-events: none;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: haloBreathe 40s ease-in-out infinite;
-  }
-
   #wx-overlay {
     position: absolute;
     top: 50%;
@@ -271,7 +267,6 @@
   }
 
   #wx-overlay .wx-temp-big {
-    font-family: var(--font-sans);
     font-size: 3.8rem;
     font-weight: 700;
     line-height: 1;
@@ -286,11 +281,9 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     margin-top: 0.3rem;
-    font-family: var(--font-sans);
   }
 
   #wx-overlay .wx-loc {
-    font-family: var(--font-sans);
     font-size: 0.6rem;
     color: rgba(150,180,255,0.45);
     letter-spacing: 0.06em;
@@ -309,7 +302,7 @@
   }
 
   .wx-stat-item { text-align: center; }
-  .wx-stat-label { font-family: var(--font-sans); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(150,180,255,0.5); margin-bottom: 0.2rem; }
+  .wx-stat-label { font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(150,180,255,0.5); margin-bottom: 0.2rem; }
   .wx-stat-val { font-size: 0.88rem; font-weight: 500; color: rgba(210,230,255,0.9); }
 
   #wx-forecast-bar {
@@ -323,11 +316,8 @@
     z-index: 10;
   }
 
-  .fx-item {
-    text-align: center;
-    min-width: 44px;
-  }
-  .fx-time { font-family: var(--font-sans); font-size: 0.55rem; color: rgba(150,180,255,0.4); margin-bottom: 0.15rem; }
+  .fx-item { text-align: center; min-width: 44px; }
+  .fx-time { font-size: 0.55rem; color: rgba(150,180,255,0.4); margin-bottom: 0.15rem; }
   .fx-icon { font-size: 0.9rem; }
   .fx-temp { font-size: 0.72rem; color: rgba(210,230,255,0.7); font-weight: 500; }
 
@@ -339,7 +329,7 @@
     margin-bottom: 0;
   }
 
-  /* ── NRK News ── */
+  /* ── NRK News Panel ── */
   #panel-news {
     grid-column: 2;
     grid-row: 2;
@@ -347,40 +337,19 @@
     overflow: hidden;
   }
 
-  #panel-news::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 340px;
-    height: 340px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(30,80,180,0.38) 0%, rgba(10,30,100,0.18) 40%, transparent 70%);
-    filter: blur(38px);
-    pointer-events: none;
-    z-index: 0;
-    animation: glowBreatheCenter 30s ease-in-out infinite; animation-delay: -15s;
-  }
-
   #panel-news .panel-label,
-  .news-list { position: relative; z-index: 1; }
-
+  .news-list { position: relative; z-index: 2; }
   .news-list { display: flex; flex-direction: column; gap: 0; overflow: hidden; flex: 1; }
 
   .news-item {
     padding: 0.55rem 0;
     border-bottom: 0.5px solid rgba(60,100,200,0.18);
-    cursor: pointer;
-    transition: background 0.15s;
   }
 
   .news-item:first-child { padding-top: 0; }
   .news-item:last-child { border-bottom: none; }
-  .news-item:hover .news-headline { color: var(--gold); }
 
   .news-category {
-    font-family: var(--font-sans);
     font-size: 0.6rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -393,11 +362,9 @@
     line-height: 1.4;
     font-weight: 500;
     color: var(--text);
-    transition: color 0.15s;
   }
 
   .news-time {
-    font-family: var(--font-sans);
     font-size: 0.62rem;
     color: rgba(150,180,255,0.38);
     margin-top: 0.3rem;
@@ -410,7 +377,7 @@
     padding: 2rem 0;
   }
 
-  /* ── Footer status bar ── */
+  /* ── Footer ── */
   footer {
     grid-column: 1 / -1;
     background: var(--surface);
@@ -419,7 +386,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: var(--font-sans);
     font-size: 0.62rem;
     color: var(--muted);
     letter-spacing: 0.04em;
@@ -441,44 +407,6 @@
   .val-green { color: var(--green); }
   .val-red   { color: var(--red); }
   .val-gold  { color: var(--gold); }
-
-  .shimmer {
-    background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 4px;
-    height: 1em;
-    display: inline-block;
-    width: 80px;
-  }
-  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-
-  @keyframes glowBreathe {
-    0%, 100% { opacity: 0.08; transform: translateX(-50%) scale(0.92); }
-    50%       { opacity: 1.0;  transform: translateX(-50%) scale(1.12); }
-  }
-
-  @keyframes glowBreatheCenter {
-    0%, 100% { opacity: 0.07; transform: translate(-50%, -50%) scale(0.9); }
-    50%       { opacity: 1.0;  transform: translate(-50%, -50%) scale(1.14); }
-  }
-
-  @keyframes haloBreathe {
-    0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1.0); }
-    50%       { opacity: 0.72; transform: translate(-50%, -50%) scale(1.03); }
-  }
-
-  @media (max-width: 900px) {
-    html, body { height: auto; overflow: auto; }
-    main { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
-    #panel-xrp { grid-column: 1 / -1; min-height: 280px; }
-    #panel-xrp    { grid-row: 1; }
-    #panel-weather { grid-row: 3; }
-    #panel-news   { grid-row: 4; }
-    header { padding: 1rem 1.25rem; }
-    .panel { padding: 1.25rem; }
-    footer { padding: 0.5rem 1.25rem; }
-  }
 
   /* ── Info strip ── */
   #info-strip {
@@ -509,10 +437,7 @@
     white-space: nowrap;
   }
 
-  .strip-val {
-    color: var(--text);
-    font-weight: 500;
-  }
+  .strip-val { color: var(--text); font-weight: 500; }
 
   .clarity-pill {
     font-size: 0.6rem;
@@ -526,80 +451,12 @@
     border: 0.5px solid rgba(76,175,133,0.3);
   }
 
-  .dom-bar-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+  .dom-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
+  .dom-bar { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .dom-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 1s ease; }
 
-  .dom-bar {
-    width: 60px;
-    height: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .dom-bar-fill {
-    height: 100%;
-    background: var(--gold);
-    border-radius: 2px;
-    transition: width 1s ease;
-  }
-
-  /* ── Ticker tape ── */
-  #ticker-wrap {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 22px;
-    overflow: hidden;
-    background: rgba(10,10,11,0.7);
-    border-top: 0.5px solid var(--border);
-    z-index: 5;
-  }
-
-  #ticker-track {
-    display: flex;
-    align-items: center;
-    gap: 3rem;
-    white-space: nowrap;
-    animation: tickerScroll 40s linear infinite;
-    height: 100%;
-    padding: 0 1rem;
-  }
-
-  @keyframes tickerScroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  .tick-item {
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    flex-shrink: 0;
-  }
-
-  .tick-item .tick-val { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
-  .tick-item .tick-up  { color: var(--green); }
-  .tick-item .tick-dn  { color: var(--red); }
-
-  .xrp-portfolio {
-    font-size: 0.72rem;
-    color: rgba(201,168,76,0.7);
-    letter-spacing: 0.02em;
-    margin-top: 0.15rem;
-  }
-
+  .xrp-portfolio { font-size: 0.72rem; color: rgba(201,168,76,0.7); letter-spacing: 0.02em; margin-top: 0.15rem; }
   .xrp-portfolio span { color: var(--gold); font-weight: 600; }
-
-  #wx-particles, #xrp-particles {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
 
   #footer-quote {
     font-size: 0.6rem;
@@ -613,72 +470,21 @@
     text-overflow: ellipsis;
   }
 
-  .aurora-wrap {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 2;
-    overflow: hidden;
-  }
-
-  .aurora-band {
-    position: absolute;
-    left: -20%;
-    width: 140%;
-    border-radius: 50%;
-    filter: blur(72px);
-    mix-blend-mode: screen;
-    opacity: 0;
-  }
-
-  .aurora-band:nth-child(1) {
-    top: -30%;
-    height: 55%;
-    background: radial-gradient(ellipse at 40% 50%, rgba(20,60,160,0.32) 0%, rgba(10,30,100,0.14) 50%, transparent 75%);
-    animation: aurora1 28s ease-in-out infinite;
-  }
-
-  .aurora-band:nth-child(2) {
-    top: -22%;
-    height: 48%;
-    background: radial-gradient(ellipse at 65% 50%, rgba(0,80,120,0.22) 0%, rgba(0,40,80,0.10) 55%, transparent 75%);
-    animation: aurora2 34s ease-in-out infinite;
-    animation-delay: -12s;
-  }
-
-  .aurora-band:nth-child(3) {
-    top: -18%;
-    height: 44%;
-    background: radial-gradient(ellipse at 30% 50%, rgba(30,100,80,0.14) 0%, rgba(10,60,50,0.07) 55%, transparent 75%);
-    animation: aurora3 42s ease-in-out infinite;
-    animation-delay: -22s;
-  }
-
-  @keyframes aurora1 {
-    0%,100% { opacity: 0.0; transform: translateX(0%)   scaleY(1.0);  }
-    25%      { opacity: 0.8; transform: translateX(4%)   scaleY(1.08); }
-    50%      { opacity: 0.5; transform: translateX(-3%)  scaleY(0.95); }
-    75%      { opacity: 0.9; transform: translateX(6%)   scaleY(1.05); }
-  }
-
-  @keyframes aurora2 {
-    0%,100% { opacity: 0.0; transform: translateX(0%)   scaleY(1.0);  }
-    30%      { opacity: 0.7; transform: translateX(-5%)  scaleY(1.10); }
-    60%      { opacity: 0.4; transform: translateX(4%)   scaleY(0.92); }
-    80%      { opacity: 0.8; transform: translateX(-2%)  scaleY(1.06); }
-  }
-
-  @keyframes aurora3 {
-    0%,100% { opacity: 0.0; transform: translateX(0%)   scaleY(1.0);  }
-    35%      { opacity: 0.6; transform: translateX(7%)   scaleY(1.12); }
-    65%      { opacity: 0.3; transform: translateX(-4%)  scaleY(0.96); }
-    85%      { opacity: 0.7; transform: translateX(3%)   scaleY(1.04); }
+  @media (max-width: 900px) {
+    html, body { height: auto; overflow: auto; }
+    main { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
+    #panel-xrp { grid-column: 1 / -1; min-height: 280px; }
+    #panel-xrp    { grid-row: 1; }
+    #panel-weather { grid-row: 3; }
+    #panel-news   { grid-row: 4; }
+    .panel { padding: 1.25rem; }
   }
 </style>
 </head>
 <body>
 
 <main>
+  <div class="nebula-space-bg"></div>
 
   <div class="panel" id="panel-xrp">
     <div class="xrp-greeting-row">
@@ -687,7 +493,7 @@
       <div class="header-time" id="hdr-time">—</div>
     </div>
     <div class="xrp-header">
-      <div class="panel-label" style="margin-bottom:0;"><span class="dot-live" style="width:4px;height:4px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;"></span> XRP / USD · Live</div>
+      <div class="panel-label" style="margin-bottom:0;"><span class="dot-live" style="width:4px;height:4px;border-radius:50%;display:inline-block;"></span> XRP / USD · Live</div>
       <div class="xrp-meta" id="xrp-meta-row">
         <span class="xrp-meta-item">MCap <span class="xrp-meta-val" id="xrp-mcap">—</span></span>
         <span class="xrp-meta-item">Vol 24h <span class="xrp-meta-val" id="xrp-vol">—</span></span>
@@ -700,6 +506,7 @@
       <span class="badge" id="xrp-badge">—</span>
     </div>
     <div class="xrp-portfolio">Portfolio · <span id="xrp-portfolio-val">—</span></div>
+    
     <div class="xrp-chart-wrap">
       <canvas id="xrp-particles"></canvas>
       <canvas id="xrp-chart" style="position:relative; z-index:1; width:100%; height:140px;"></canvas>
@@ -737,8 +544,6 @@
 
   <div class="panel" id="panel-weather">
     <div class="panel-label"><span style="width:4px;height:4px;border-radius:50%;background:var(--blue);display:inline-block;"></span> Weather · Oslo</div>
-    <div id="sphere-halo"></div>
-    <canvas id="wx-particles"></canvas>
     <div id="sphere-wrap">
       <canvas id="sphere-canvas"></canvas>
     </div>
@@ -779,7 +584,6 @@
       <div class="news-loading">Henter nyheter…</div>
     </div>
   </div>
-
 </main>
 
 <footer>
@@ -812,11 +616,10 @@ function tick() {
   const now  = new Date();
   const hour = now.getHours();
 
-  let greet;
+  let greet = 'Good night, Mike';
   if (hour >= 6  && hour < 12) greet = 'Good morning, Mike';
   else if (hour >= 12 && hour < 18) greet = 'Good afternoon, Mike';
   else if (hour >= 18 && hour < 23) greet = 'Good evening, Mike';
-  else                               greet = 'Good night, Mike';
 
   el('hdr-greeting').textContent = greet;
   el('hdr-time').textContent     = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
@@ -835,7 +638,32 @@ function updatePortfolio(price) {
   if (el('strip-portfolio')) el('strip-portfolio').textContent = formattedVal;
 }
 
-// ── XRP Chart ────────────────────────────────────────────────────────────────
+// ── XHR Proxy Infrastructure ──────────────────────────────────────────────────
+var PROXY = 'https://4tmcigbgkiuop9fthcbtlc3ye2hwtxhk.ui.nabu.casa/local';
+
+function xhrGet(url) {
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.timeout = 7000;
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try { resolve(JSON.parse(xhr.responseText)); } catch(e) { resolve(xhr.responseText); }
+      } else { reject(new Error('HTTP ' + xhr.status)); }
+    };
+    xhr.onerror = function() { reject(new Error('XHR network drop')); };
+    xhr.ontimeout = function() { reject(new Error('timeout')); };
+    xhr.send();
+  });
+}
+
+function xFetch(url) {
+  return xhrGet(url).catch(function() {
+    return xhrGet('https://corsproxy.io/?' + encodeURIComponent(url));
+  });
+}
+
+// ── XRP Price & Charts ───────────────────────────────────────────────────────
 let xrpChart = null;
 const XRP_HISTORY_KEY = 'xrp_price_history';
 
@@ -855,23 +683,20 @@ function renderXRPChart(labels, data) {
   const ctx = canvas.getContext('2d');
   if (xrpChart) xrpChart.destroy();
 
-  const lineColor = '#4a90d9';          
-  const fillColor = 'rgba(40,100,220,'; 
-
   xrpChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
       datasets: [{
         data: data,
-        borderColor: lineColor,
+        borderColor: '#4a90d9',
         borderWidth: 1.5,
         pointRadius: 0,
         fill: true,
         backgroundColor: function(ctx2) {
           const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, ctx2.chart.height);
-          g.addColorStop(0, fillColor + '0.2)');
-          g.addColorStop(1, fillColor + '0)');
+          g.addColorStop(0, 'rgba(40,100,220,0.2)');
+          g.addColorStop(1, 'rgba(40,100,220,0)');
           return g;
         },
         tension: 0.4
@@ -919,52 +744,22 @@ function renderXRPChart(labels, data) {
   });
 }
 
-var PROXY = 'https://4tmcigbgkiuop9fthcbtlc3ye2hwtxhk.ui.nabu.casa/local';
-
-function xhrGet(url) {
-  return new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.timeout = 7000;
-    xhr.onload = function() {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { resolve(JSON.parse(xhr.responseText)); }
-        catch(e) { reject(e); }
-      } else { reject(new Error('HTTP ' + xhr.status)); }
-    };
-    xhr.onerror = function() { reject(new Error('XHR error')); };
-    xhr.ontimeout = function() { reject(new Error('timeout')); };
-    xhr.send();
-  });
-}
-
-function xFetch(url) {
-  return xhrGet(url).catch(function() {
-    return xhrGet('https://corsproxy.io/?' + encodeURIComponent(url));
-  });
-}
-
 function loadXRP() {
-  // Pull real-time XRP valuations
   xhrGet('https://api.coinlore.net/api/ticker/?id=58').then(function(arr) {
     var t = arr && arr[0];
-    if (!t || !t.price_usd) throw new Error('bad data');
-    var price  = parseFloat(t.price_usd);
-    var change = parseFloat(t.percent_change_24h);
-    var data = {
-      price:  price,
-      high:   parseFloat(t.high24h) || price * 1.01,
-      low:    parseFloat(t.low24h)  || price * 0.99,
+    if (!t || !t.price_usd) throw new Error('bad ticker data');
+    renderXRPData({
+      price:  parseFloat(t.price_usd),
+      high:   parseFloat(t.high24h) || parseFloat(t.price_usd) * 1.01,
+      low:    parseFloat(t.low24h)  || parseFloat(t.price_usd) * 0.99,
       vol:    parseFloat(t.volume24),
-      change: change,
+      change: parseFloat(t.percent_change_24h),
       mcap:   parseFloat(t.market_cap_usd)
-    };
-    renderXRPData(data);
-  }).catch(function(e) {
-    console.warn('CoinLore failed:', e.message);
+    });
+  }).catch(function() {
     xFetch(PROXY + '/xrp.json').then(function(j) {
       var t = j.data && j.data[0];
-      if (!t) throw new Error('no data');
+      if (!t) throw new Error('no proxy structural keys');
       var price = parseFloat(t.last);
       var open  = parseFloat(t.open24h);
       renderXRPData({
@@ -981,14 +776,13 @@ function loadXRP() {
     });
   });
 
-  // Pull historical charts from CryptoCompare (replaces the broken CoinLore OHLC path)
+  // Pull historical 24h metrics safely from CryptoCompare
   xhrGet('https://min-api.cryptocompare.com/data/v2/histohour?fsym=XRP&tsym=USD&limit=24').then(function(res) {
-    if (!res || !res.Data || !res.Data.Data) throw new Error('Bad chart response');
+    if (!res || !res.Data || !res.Data.Data) throw new Error('Bad structural object path');
     var points = res.Data.Data;
     var prices = points.map(function(d) { return parseFloat(d.close); });
     var labels = points.map(function(d) { 
-      var tObj = new Date(d.time * 1000);
-      return tObj.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+      return new Date(d.time * 1000).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
     });
     if (prices.length > 2) renderXRPChart(labels, prices);
   }).catch(function() {
@@ -1001,7 +795,6 @@ function loadXRP() {
     }
   });
 
-  // Fire live Global Dominance data loop updates
   loadGlobalMacroData();
 }
 
@@ -1023,7 +816,7 @@ function renderXRPData(data) {
 function loadGlobalMacroData() {
   xhrGet('https://api.coinlore.net/api/global/').then(function(res) {
     var data = res && res[0];
-    if (!data || !data.btc_d) throw new Error('Global object key structural error');
+    if (!data || !data.btc_d) throw new Error('Global macro missing metrics');
 
     var btcd = parseFloat(data.btc_d);
     
@@ -1038,8 +831,7 @@ function loadGlobalMacroData() {
     }
     
     if (el('strip-alt')) el('strip-alt').textContent = seasonText;
-  }).catch(function(e) {
-    console.warn('Macro strip calculation lookup dropped:', e.message);
+  }).catch(function() {
     if (el('strip-btcd')) el('strip-btcd').textContent = '56.1%';
     if (el('strip-btcd-bar')) el('strip-btcd-bar').style.width = '56.1%';
     if (el('strip-alt')) el('strip-alt').textContent = 'Bitcoin Era';
@@ -1100,25 +892,123 @@ async function loadWeather() {
       }
     }
   } catch(e) {
-    console.warn('Weather fetch failed:', e.message);
+    console.warn('Weather error:', e.message);
     setStatus('wx', false);
   }
 }
 
-// ── News Logic Mock/Placeholder to bypass missing functions ─────────────────
-function loadNewsFallback() {
-  var nl = el('news-list');
-  if (nl && nl.querySelector('.news-loading')) {
-    nl.innerHTML = '<div class="news-item"><div class="news-category">Innenriks</div><div class="news-headline">Dashboard oppdatert og kjører lokalt på Tizen OS</div><div class="news-time">Just nu</div></div>';
+// ── Native DOM-parsed NRK News RSS Engine ─────────────────────────────────────
+function loadNRKNews() {
+  var rssUrl = 'https://www.nrk.no/nyheter/siste.rss';
+  
+  xFetch(rssUrl).then(function(xmlText) {
+    if (!xmlText) throw new Error('Empty payload stream');
+    
+    var parser = new DOMParser();
+    var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    var items  = xmlDoc.getElementsByTagName('item');
+    
+    var nl = el('news-list');
+    if (!nl) return;
+    nl.innerHTML = ''; 
+    
+    var maxItems = Math.min(items.length, 4);
+    if (maxItems === 0) {
+      nl.innerHTML = '<div class="news-loading">Ingen nyheter tilgjengelig</div>';
+      return;
+    }
+
+    for (var i = 0; i < maxItems; i++) {
+      var item = items[i];
+      var title = item.getElementsByTagName('title')[0] ? item.getElementsByTagName('title')[0].textContent : '';
+      var category = 'NRK NYHETER';
+      
+      if (item.getElementsByTagName('category')[0]) {
+        category = item.getElementsByTagName('category')[0].textContent;
+      }
+      
+      var timeStr = 'Nylig';
+      if (item.getElementsByTagName('pubDate')[0]) {
+        var pDate = new Date(item.getElementsByTagName('pubDate')[0].textContent);
+        if (!isNaN(pDate.getTime())) {
+          timeStr = pDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
+      }
+
+      var article = document.createElement('div');
+      article.className = 'news-item';
+      article.innerHTML = '<div class="news-category">' + category + '</div>' +
+                          '<div class="news-headline">' + title + '</div>' +
+                          '<div class="news-time">' + timeStr + '</div>';
+      nl.appendChild(article);
+    }
     setStatus('news', true);
+  }).catch(function(e) {
+    console.warn('NRK Stream exception:', e.message);
+    var nl = el('news-list');
+    if (nl) nl.innerHTML = '<div class="news-loading" style="color:var(--red)">Kunne ikke laste nyheter</div>';
+    setStatus('news', false);
+  });
+}
+
+// ── Space Dust Particle Engine ───────────────────────────────────────────────
+function initSpaceDust() {
+  var canvas = el('xrp-particles');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  
+  var particles = [];
+  var maxParticles = 35; 
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
   }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createParticle(initY) {
+    return {
+      x: Math.random() * canvas.width,
+      y: initY ? Math.random() * canvas.height : canvas.height + 10,
+      size: Math.random() * 1.5 + 0.5, 
+      speedY: -(Math.random() * 0.2 + 0.1), 
+      speedX: (Math.random() * 0.2 - 0.1), 
+      opacity: Math.random() * 0.4 + 0.1 
+    };
+  }
+
+  for (var i = 0; i < maxParticles; i++) {
+    particles.push(createParticle(true));
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.y += p.speedY;
+      p.x += p.speedX;
+      
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(201, 168, 76, ' + p.opacity + ')'; 
+      ctx.fill();
+      
+      if (p.y < -10 || p.x < -10 || p.x > canvas.width + 10) {
+        particles[i] = createParticle(false);
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
 }
 
 // ── Startup Matrix ────────────────────────────────────────────────────────────
 window.onload = function() {
   loadXRP();
   loadWeather();
-  setTimeout(loadNewsFallback, 1000);
+  loadNRKNews();
+  initSpaceDust(); 
 };
 </script>
 </body>
