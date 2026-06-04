@@ -42,10 +42,10 @@
     overflow: hidden;
   }
 
-  /* ── Master Viewport Framework (News shifted slightly right) ── */
+  /* ── Master Viewport Framework ── */
   main {
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr; /* Shifts the column divider right to give the center more breathing room */
+    grid-template-columns: 1.15fr 0.85fr; 
     grid-template-rows: 1.1fr 0.9fr;
     overflow: hidden;
     min-height: 0;
@@ -55,7 +55,7 @@
 
   #panel-xrp { grid-column: 1 / -1; grid-row: 1; }
   #panel-weather { grid-column: 1; grid-row: 2; }
-  #panel-news { grid-column: 2; grid-row: 2; padding-left: 3.5rem; } /* Gives extra space padding from the center zone */
+  #panel-news { grid-column: 2; grid-row: 2; padding-left: 3.5rem; } 
 
   .panel {
     background: transparent !important;
@@ -644,18 +644,19 @@ function initSpaceDust() {
   window.addEventListener('resize', resize);
 
   function createParticle(initY) {
-    // 50% of the particles run 30% faster to establish a layered background depth field
     var isFasterTier = Math.random() > 0.5;
-    var baseSpeedY = -(Math.random() * 0.035 + 0.015);
+    var baseSpeedY = -(Math.random() * 0.045 + 0.02); // Slightly increased baseline vertical drift
     var speedMultiplier = isFasterTier ? 1.35 : 1.0;
 
     return {
       x: Math.random() * canvas.width,
       y: initY ? Math.random() * canvas.height : canvas.height + 10,
-      size: Math.random() * 0.9 + 0.3, // Kept small and crisp
+      size: Math.random() * 0.9 + 0.3, 
       speedY: baseSpeedY * speedMultiplier, 
-      speedX: (Math.random() * 0.02 - 0.01) * speedMultiplier, 
-      opacity: isFasterTier ? (Math.random() * 0.45 + 0.15) : (Math.random() * 0.3 + 0.1)
+      speedX: (Math.random() * 0.06 - 0.03) * speedMultiplier, // Added slightly more distinct lateral drift
+      baseOpacity: isFasterTier ? (Math.random() * 0.4 + 0.2) : (Math.random() * 0.25 + 0.1),
+      twinkleSpeed: Math.random() * 0.03 + 0.01, // Custom frequency variation for the fade wave
+      twinkleOffset: Math.random() * Math.PI * 2 // Randomized phase to distribute the fades organically
     };
   }
 
@@ -663,16 +664,24 @@ function initSpaceDust() {
     particles.push(createParticle(true));
   }
 
+  var tickCount = 0;
   function animate() {
+    tickCount++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     for (var i = 0; i < particles.length; i++) {
       var p = particles[i];
       p.y += p.speedY;
       p.x += p.speedX;
       
+      // Calculate dynamic opacity wave using a smooth sine function
+      var twinkleModifier = Math.sin(tickCount * p.twinkleSpeed + p.twinkleOffset);
+      // Maps the -1 to 1 sine wave to a gentle scale factor between 0.3 and 1.0 so they never completely vanish harshly
+      var currentOpacity = p.baseOpacity * (0.65 + twinkleModifier * 0.35);
+
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(235, 242, 255, ' + p.opacity + ')'; 
+      ctx.fillStyle = 'rgba(235, 242, 255, ' + Math.max(0.02, currentOpacity) + ')'; 
       ctx.fill();
       
       if (p.y < -10 || p.x < -10 || p.x > canvas.width + 10) {
