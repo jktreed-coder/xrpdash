@@ -264,6 +264,8 @@
   <div class="nebula-space-bg"></div>
   <canvas id="global-particles"></canvas>
 
+  <audio id="ambient-player" loop></audio>
+
   <div class="panel" id="panel-xrp">
     <div class="xrp-greeting-row">
       <div class="greeting" id="hdr-greeting">—</div>
@@ -433,12 +435,6 @@ function xhrGet(url) {
   });
 }
 
-function xFetch(url) {
-  return xhrGet(url).catch(function() {
-    return xhrGet('https://corsproxy.io/?' + encodeURIComponent(url));
-  });
-}
-
 // ── XRP Telemetry Data & Graphs ──────────────────────────────────────────────
 let xrpChart = null;
 function renderXRPChart(labels, data) {
@@ -492,7 +488,7 @@ function loadXRP() {
       mcap: parseFloat(t.market_cap_usd)
     });
   }).catch(function() {
-    xFetch(PROXY + '/xrp.json').then(function(j) {
+    xhrGet(PROXY + '/xrp.json').then(function(j) {
       var t = j.data && j.data[0];
       var price = parseFloat(t.last);
       var open = parseFloat(t.open24h);
@@ -594,7 +590,8 @@ async function loadWeather() {
 
 // ── RSS News Fetcher ──
 function loadNRKNews() {
-  xFetch('https://www.nrk.no/nyheter/siste.rss').then(function(xmlText) {
+  var targetUrl = 'https://www.nrk.no/nyheter/siste.rss';
+  xhrGet(targetUrl).then(function(xmlText) {
     if (!xmlText) return;
     var parser = new DOMParser();
     var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
@@ -645,7 +642,7 @@ function initSpaceDust() {
 
   function createParticle(initY) {
     var isFasterTier = Math.random() > 0.5;
-    var baseSpeedY = -(Math.random() * 0.045 + 0.02); // Slightly increased baseline vertical drift
+    var baseSpeedY = -(Math.random() * 0.045 + 0.02); 
     var speedMultiplier = isFasterTier ? 1.35 : 1.0;
 
     return {
@@ -653,10 +650,10 @@ function initSpaceDust() {
       y: initY ? Math.random() * canvas.height : canvas.height + 10,
       size: Math.random() * 0.9 + 0.3, 
       speedY: baseSpeedY * speedMultiplier, 
-      speedX: (Math.random() * 0.06 - 0.03) * speedMultiplier, // Added slightly more distinct lateral drift
+      speedX: (Math.random() * 0.06 - 0.03) * speedMultiplier, 
       baseOpacity: isFasterTier ? (Math.random() * 0.4 + 0.2) : (Math.random() * 0.25 + 0.1),
-      twinkleSpeed: Math.random() * 0.03 + 0.01, // Custom frequency variation for the fade wave
-      twinkleOffset: Math.random() * Math.PI * 2 // Randomized phase to distribute the fades organically
+      twinkleSpeed: Math.random() * 0.03 + 0.01, 
+      twinkleOffset: Math.random() * Math.PI * 2 
     };
   }
 
@@ -674,9 +671,7 @@ function initSpaceDust() {
       p.y += p.speedY;
       p.x += p.speedX;
       
-      // Calculate dynamic opacity wave using a smooth sine function
       var twinkleModifier = Math.sin(tickCount * p.twinkleSpeed + p.twinkleOffset);
-      // Maps the -1 to 1 sine wave to a gentle scale factor between 0.3 and 1.0 so they never completely vanish harshly
       var currentOpacity = p.baseOpacity * (0.65 + twinkleModifier * 0.35);
 
       ctx.beginPath();
@@ -693,12 +688,46 @@ function initSpaceDust() {
   animate();
 }
 
+// ── Interactive Randomized Ambient Music System ──
+function initAmbientAudio() {
+  var player = el('ambient-player');
+  if (!player) return;
+
+  // A curated library of cinematic, space-themed ambient tracks
+  var playlist = [
+    "https://assets.mixkit.co/music/preview/mixkit-space-ambient-971.mp3",
+    "https://assets.mixkit.co/music/preview/mixkit-deep-space-970.mp3",
+    "https://assets.mixkit.co/music/preview/mixkit-constellation-972.mp3",
+    "https://assets.mixkit.co/music/preview/mixkit-gazing-at-the-stars-973.mp3"
+  ];
+
+  // Pick a random track from the array
+  var randomTrack = playlist[Math.floor(Math.random() * playlist.length)];
+  player.src = randomTrack;
+
+  // Set a comfortable, low morning background volume (0.0 to 1.0)
+  player.volume = 0.20; 
+
+  function unlockAudio() {
+    player.play().catch(function(err) {
+      console.log('Audio waiting for explicit viewport tap interaction:', err);
+    });
+    // Clean up click handlers instantly once audio begins
+    document.removeEventListener('click', unlockAudio);
+    document.removeEventListener('touchstart', unlockAudio);
+  }
+
+  document.addEventListener('click', unlockAudio);
+  document.addEventListener('touchstart', unlockAudio);
+}
+
 // ── Initialization Engine ──
 window.onload = function() {
   loadXRP();
   loadWeather();
   loadNRKNews();
   initSpaceDust(); 
+  initAmbientAudio();
 };
 </script>
 </body>
