@@ -45,43 +45,11 @@
     overflow: hidden;
   }
 
-  .xrp-greeting-row {
-    display: flex;
-    align-items: baseline;
-    gap: 1.25rem;
-    margin-bottom: 2.8rem;
-    flex-shrink: 0;
-  }
-
-  .xrp-greeting-row .header-time {
-    margin-left: auto;
-  }
-
-  .greeting {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .header-time {
-    font-size: 0.75rem;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-  }
-
-  .header-date {
-    font-size: 0.75rem;
-    color: var(--muted);
-    letter-spacing: 0.02em;
-  }
-
   /* Unifies the dashboard background into dark deep space */
   main {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1.1fr 0.9fr; /* Tightens the bottom half to prevent weather hogging */
     gap: 1px;
     background: var(--border);
     overflow: hidden;
@@ -118,9 +86,9 @@
     height: 90vh;
     border-radius: 50%;
     background: radial-gradient(circle, 
-      rgba(24, 76, 196, 0.45) 0%, 
-      rgba(14, 42, 128, 0.25) 35%, 
-      rgba(8, 24, 74, 0.08) 60%, 
+      rgba(24, 76, 196, 0.35) 0%, 
+      rgba(14, 42, 128, 0.18) 35%, 
+      rgba(8, 24, 74, 0.05) 60%, 
       transparent 80%
     );
     filter: blur(80px); 
@@ -131,13 +99,56 @@
 
   @keyframes nebulaBreathe60s {
     0%, 100% { 
-      opacity: 0.15; 
-      transform: translate(-50%, -50%) scale(0.90); 
+      opacity: 0.2; 
+      transform: translate(-50%, -50%) scale(0.95); 
     }
     50% { 
-      opacity: 0.85; 
-      transform: translate(-50%, -50%) scale(1.15); 
+      opacity: 0.7; 
+      transform: translate(-50%, -50%) scale(1.10); 
     }
+  }
+
+  /* Comprehensive Background Particle Canvas */
+  #xrp-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .xrp-greeting-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .xrp-greeting-row .header-time {
+    margin-left: auto;
+  }
+
+  .greeting {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .header-time {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .header-date {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
   }
 
   .panel-label {
@@ -214,33 +225,19 @@
   .xrp-chart-wrap {
     flex: 1;
     position: relative;
-    min-height: 140px;
+    min-height: 120px;
     margin: 0.5rem -0.25rem 0;
-    z-index: 2;
-  }
-
-  #xrp-particles {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
+    z-index: 5;
   }
 
   /* ── Weather Panel ── */
-  #panel-weather {
-    grid-column: 1;
-    grid-row: 2;
-    padding: 0;
-    overflow: hidden;
-    position: relative;
-  }
-
   #sphere-wrap {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    bottom: 50px; /* Shifts rendering clear of layout content stats */
   }
 
   #sphere-canvas {
@@ -251,7 +248,7 @@
 
   #wx-overlay {
     position: absolute;
-    top: 50%;
+    top: 42%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
@@ -260,34 +257,34 @@
   }
 
   #wx-overlay .wx-icon-big {
-    font-size: 2.8rem;
+    font-size: 2.4rem;
     line-height: 1;
-    margin-bottom: 0.3rem;
-    filter: drop-shadow(0 0 12px rgba(80,160,255,0.7));
+    margin-bottom: 0.1rem;
+    filter: drop-shadow(0 0 12px rgba(80,160,255,0.5));
   }
 
   #wx-overlay .wx-temp-big {
-    font-size: 3.8rem;
+    font-size: 3.4rem;
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.03em;
     color: #fff;
-    text-shadow: 0 0 30px rgba(100,180,255,0.6), 0 2px 8px rgba(0,0,0,0.8);
+    text-shadow: 0 0 30px rgba(100,180,255,0.4), 0 2px 8px rgba(0,0,0,0.8);
   }
 
   #wx-overlay .wx-desc-big {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     color: rgba(200,220,255,0.75);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-top: 0.3rem;
+    margin-top: 0.2rem;
   }
 
   #wx-overlay .wx-loc {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     color: rgba(150,180,255,0.45);
     letter-spacing: 0.06em;
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
   }
 
   #wx-stats-bar {
@@ -296,18 +293,18 @@
     left: 0; right: 0;
     display: flex;
     justify-content: space-around;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     background: linear-gradient(to top, rgba(10,10,11,0.95) 60%, transparent);
     z-index: 10;
   }
 
   .wx-stat-item { text-align: center; }
-  .wx-stat-label { font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(150,180,255,0.5); margin-bottom: 0.2rem; }
-  .wx-stat-val { font-size: 0.88rem; font-weight: 500; color: rgba(210,230,255,0.9); }
+  .wx-stat-label { font-size: 0.55rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(150,180,255,0.5); margin-bottom: 0.1rem; }
+  .wx-stat-val { font-size: 0.8rem; font-weight: 500; color: rgba(210,230,255,0.9); }
 
   #wx-forecast-bar {
     position: absolute;
-    bottom: 62px;
+    bottom: 52px;
     left: 0; right: 0;
     display: flex;
     justify-content: center;
@@ -317,9 +314,9 @@
   }
 
   .fx-item { text-align: center; min-width: 44px; }
-  .fx-time { font-size: 0.55rem; color: rgba(150,180,255,0.4); margin-bottom: 0.15rem; }
-  .fx-icon { font-size: 0.9rem; }
-  .fx-temp { font-size: 0.72rem; color: rgba(210,230,255,0.7); font-weight: 500; }
+  .fx-time { font-size: 0.52rem; color: rgba(150,180,255,0.4); margin-bottom: 0.15rem; }
+  .fx-icon { font-size: 0.85rem; }
+  .fx-temp { font-size: 0.68rem; color: rgba(210,230,255,0.7); font-weight: 500; }
 
   #panel-weather .panel-label {
     position: absolute;
@@ -330,44 +327,37 @@
   }
 
   /* ── NRK News Panel ── */
-  #panel-news {
-    grid-column: 2;
-    grid-row: 2;
-    position: relative;
-    overflow: hidden;
-  }
-
   #panel-news .panel-label,
   .news-list { position: relative; z-index: 2; }
-  .news-list { display: flex; flex-direction: column; gap: 0; overflow: hidden; flex: 1; }
+  .news-list { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; flex: 1; }
 
   .news-item {
-    padding: 0.55rem 0;
-    border-bottom: 0.5px solid rgba(60,100,200,0.18);
+    padding: 0.5rem 0;
+    border-bottom: 0.5px solid rgba(60,100,200,0.15);
   }
 
   .news-item:first-child { padding-top: 0; }
-  .news-item:last-child { border-bottom: none; }
+  .news-item:last-child { border-bottom: none; padding-bottom: 0; }
 
   .news-category {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: rgba(150,180,255,0.55);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.2rem;
   }
 
   .news-headline {
-    font-size: 0.9rem;
-    line-height: 1.4;
+    font-size: 0.88rem;
+    line-height: 1.35;
     font-weight: 500;
     color: var(--text);
   }
 
   .news-time {
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     color: rgba(150,180,255,0.38);
-    margin-top: 0.3rem;
+    margin-top: 0.2rem;
   }
 
   .news-loading {
@@ -390,6 +380,7 @@
     color: var(--muted);
     letter-spacing: 0.04em;
     flex-shrink: 0;
+    z-index: 10;
   }
 
   .status-indicators { display: flex; gap: 1.5rem; }
@@ -485,6 +476,7 @@
 
 <main>
   <div class="nebula-space-bg"></div>
+  <canvas id="xrp-particles"></canvas>
 
   <div class="panel" id="panel-xrp">
     <div class="xrp-greeting-row">
@@ -508,8 +500,7 @@
     <div class="xrp-portfolio">Portfolio · <span id="xrp-portfolio-val">—</span></div>
     
     <div class="xrp-chart-wrap">
-      <canvas id="xrp-particles"></canvas>
-      <canvas id="xrp-chart" style="position:relative; z-index:1; width:100%; height:140px;"></canvas>
+      <canvas id="xrp-chart" style="width:100%; height:100%;"></canvas>
     </div>
 
     <div id="info-strip">
@@ -695,7 +686,7 @@ function renderXRPChart(labels, data) {
         fill: true,
         backgroundColor: function(ctx2) {
           const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, ctx2.chart.height);
-          g.addColorStop(0, 'rgba(40,100,220,0.2)');
+          g.addColorStop(0, 'rgba(40,100,220,0.15)');
           g.addColorStop(1, 'rgba(40,100,220,0)');
           return g;
         },
@@ -721,7 +712,7 @@ function renderXRPChart(labels, data) {
       scales: {
         x: {
           display: true,
-          grid: { color: 'rgba(255,255,255,0.03)' },
+          grid: { color: 'rgba(255,255,255,0.02)' },
           ticks: {
             color: '#7a7872',
             font: { family: "'Helvetica Neue', Helvetica, Arial, sans-serif", size: 9 },
@@ -732,7 +723,7 @@ function renderXRPChart(labels, data) {
         y: {
           display: true,
           position: 'right',
-          grid: { color: 'rgba(255,255,255,0.04)' },
+          grid: { color: 'rgba(255,255,255,0.03)' },
           ticks: {
             color: '#7a7872',
             font: { family: "'Helvetica Neue', Helvetica, Arial, sans-serif", size: 9 },
@@ -810,6 +801,11 @@ function renderXRPData(data) {
   badge.textContent = (data.change >= 0 ? '+' : '') + fmt(data.change) + '%';
   badge.className   = 'badge ' + (data.change >= 0 ? 'badge-green' : 'badge-red');
   setStatus('xrp', true);
+
+  // Updates the visual landscape log timestamp inside the footer element
+  if (el('footer-updated')) {
+    el('footer-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
 }
 
 // ── Market Macro Calculations (BTC.D & Altseason Status) ─────────────────────
@@ -958,11 +954,12 @@ function initSpaceDust() {
   var ctx = canvas.getContext('2d');
   
   var particles = [];
-  var maxParticles = 35; 
+  var maxParticles = 25; // Balanced count across full layout window
 
   function resize() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    var p = canvas.parentElement;
+    canvas.width = p.clientWidth;
+    canvas.height = p.clientHeight;
   }
   resize();
   window.addEventListener('resize', resize);
@@ -971,10 +968,10 @@ function initSpaceDust() {
     return {
       x: Math.random() * canvas.width,
       y: initY ? Math.random() * canvas.height : canvas.height + 10,
-      size: Math.random() * 1.5 + 0.5, 
-      speedY: -(Math.random() * 0.2 + 0.1), 
-      speedX: (Math.random() * 0.2 - 0.1), 
-      opacity: Math.random() * 0.4 + 0.1 
+      size: Math.random() * 1.2 + 0.4, 
+      speedY: -(Math.random() * 0.05 + 0.03), // Ultra-slow cosmic drift velocity
+      speedX: (Math.random() * 0.04 - 0.02), 
+      opacity: Math.random() * 0.35 + 0.1 
     };
   }
 
@@ -991,7 +988,7 @@ function initSpaceDust() {
       
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(201, 168, 76, ' + p.opacity + ')'; 
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + p.opacity + ')'; // Premium, clean space-white dust color
       ctx.fill();
       
       if (p.y < -10 || p.x < -10 || p.x > canvas.width + 10) {
