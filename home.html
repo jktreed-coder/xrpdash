@@ -10,15 +10,12 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0a0a0b;
-    --surface: #111113;
-    --surface2: #18181b;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
+    --bg: #050507;
+    --surface: #0c0c0e;
+    --border: rgba(255,255,255,0.05);
     --text: #f0ede8;
     --muted: #7a7872;
     --gold: #c9a84c;
-    --gold-dim: rgba(201,168,76,0.12);
     --green: #4caf85;
     --red: #e05c5c;
     --blue: #5b9bd5;
@@ -45,77 +42,80 @@
     overflow: hidden;
   }
 
-  /* Unifies the dashboard background into dark deep space */
+  /* ── Seamless Master Viewport (No Borders, Gaps, or Separator Lines) ── */
   main {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1.1fr 0.9fr; /* Tightens the bottom half to prevent weather hogging */
-    gap: 1px;
-    background: var(--border);
+    grid-template-rows: 1.1fr 0.9fr;
     overflow: hidden;
     min-height: 0;
     position: relative;
-    z-index: 3;
-    background-color: #050507; 
+    background-color: var(--bg); 
   }
 
   #panel-xrp { grid-column: 1 / -1; grid-row: 1; }
-  #panel-weather { grid-column: 1; grid-row: 2; background: transparent !important; }
+  #panel-weather { grid-column: 1; grid-row: 2; }
   #panel-news { grid-column: 2; grid-row: 2; }
 
-  /* Make all panels transparent so the single background nebula shines through */
+  /* Transparent panels to let the background elements seamlessly blend */
   .panel {
-    background: rgba(10, 10, 11, 0.4); 
-    backdrop-filter: blur(4px); 
+    background: transparent !important;
+    backdrop-filter: none !important;
     padding: 1.5rem 2rem;
     position: relative;
     overflow: hidden;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    z-index: 3;
+    z-index: 5;
   }
 
-  /* ── Massive Unified Blue Nebula Layer ── */
+  /* ── Master Background Layer: Pulsating Blue Cosmic Nebula ── */
   .nebula-space-bg {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90vw;
-    height: 90vh;
-    border-radius: 50%;
-    background: radial-gradient(circle, 
-      rgba(24, 76, 196, 0.35) 0%, 
-      rgba(14, 42, 128, 0.18) 35%, 
-      rgba(8, 24, 74, 0.05) 60%, 
-      transparent 80%
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 50%, 
+      rgba(24, 76, 196, 0.22) 0%, 
+      rgba(14, 42, 128, 0.10) 40%, 
+      rgba(5, 5, 7, 0) 75%
     );
-    filter: blur(80px); 
+    filter: blur(60px); 
     pointer-events: none;
     z-index: 1; 
-    animation: nebulaBreathe60s 60s ease-in-out infinite;
+    animation: nebulaBreathe60s 40s ease-in-out infinite;
   }
 
   @keyframes nebulaBreathe60s {
-    0%, 100% { 
-      opacity: 0.2; 
-      transform: translate(-50%, -50%) scale(0.95); 
-    }
-    50% { 
-      opacity: 0.7; 
-      transform: translate(-50%, -50%) scale(1.10); 
-    }
+    0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); }
+    50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.08); }
   }
 
-  /* Comprehensive Background Particle Canvas */
-  #xrp-particles {
+  /* ── Dedicated Weather Background Nebula ── */
+  .weather-nebula-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 55%, 
+      rgba(30, 90, 230, 0.18) 0%, 
+      rgba(15, 45, 120, 0.05) 45%, 
+      transparent 70%
+    );
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Universal Global Floating Space Dust Canvas */
+  #global-particles {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2;
+    z-index: 3;
     pointer-events: none;
   }
 
@@ -127,29 +127,10 @@
     flex-shrink: 0;
   }
 
-  .xrp-greeting-row .header-time {
-    margin-left: auto;
-  }
-
-  .greeting {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .header-time {
-    font-size: 0.75rem;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-  }
-
-  .header-date {
-    font-size: 0.75rem;
-    color: var(--muted);
-    letter-spacing: 0.02em;
-  }
+  .xrp-greeting-row .header-time { margin-left: auto; }
+  .greeting { font-size: 1rem; font-weight: 700; color: var(--gold); letter-spacing: 0.04em; text-transform: uppercase; }
+  .header-time { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; }
+  .header-date { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em; }
 
   .panel-label {
     font-size: 0.65rem;
@@ -162,212 +143,71 @@
     align-items: center;
     gap: 0.5rem;
   }
-
-  .panel-label::before {
-    content: '';
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--gold);
-  }
-
+  .panel-label::before { content: ''; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
   .dot-live { background: var(--green) !important; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  /* ── XRP Panel ── */
-  .xrp-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    flex-shrink: 0;
-  }
-
-  .xrp-price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    position: relative; 
-    z-index: 1;
-  }
-
-  .xrp-price {
-    font-size: 3.2rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-
-  .badge {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 500;
-  }
-
+  /* ── XRP Layout Config ── */
+  .xrp-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.5rem; flex-shrink: 0; }
+  .xrp-price-row { display: flex; align-items: baseline; gap: 1rem; position: relative; z-index: 5; }
+  .xrp-price { font-size: 3.2rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+  .badge { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 500; }
   .badge-green { background: rgba(76,175,133,0.15); color: var(--green); }
   .badge-red   { background: rgba(224,92,92,0.15);  color: var(--red); }
-
-  .xrp-meta {
-    display: flex;
-    gap: 2rem;
-    align-items: baseline;
-  }
-
+  .xrp-meta { display: flex; gap: 2rem; align-items: baseline; }
   .xrp-meta-item { font-size: 0.72rem; color: var(--muted); }
   .xrp-meta-val  { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
+  .xrp-chart-wrap { flex: 1; position: relative; min-height: 120px; margin: 0.5rem -0.25rem 0; z-index: 5; }
+  .xrp-portfolio { font-size: 0.72rem; color: rgba(201,168,76,0.7); letter-spacing: 0.02em; margin-top: 0.15rem; }
+  .xrp-portfolio span { color: var(--gold); font-weight: 600; }
 
-  .xrp-chart-wrap {
-    flex: 1;
-    position: relative;
-    min-height: 120px;
-    margin: 0.5rem -0.25rem 0;
-    z-index: 5;
-  }
-
-  /* ── Weather Panel ── */
+  /* ── Weather Panel Adjustments ── */
   #sphere-wrap {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    bottom: 50px; /* Shifts rendering clear of layout content stats */
+    bottom: 45px; 
   }
-
-  #sphere-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  #wx-overlay {
-    position: absolute;
-    top: 42%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  #wx-overlay .wx-icon-big {
-    font-size: 2.4rem;
-    line-height: 1;
-    margin-bottom: 0.1rem;
-    filter: drop-shadow(0 0 12px rgba(80,160,255,0.5));
-  }
-
-  #wx-overlay .wx-temp-big {
-    font-size: 3.4rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.03em;
-    color: #fff;
-    text-shadow: 0 0 30px rgba(100,180,255,0.4), 0 2px 8px rgba(0,0,0,0.8);
-  }
-
-  #wx-overlay .wx-desc-big {
-    font-size: 0.75rem;
-    color: rgba(200,220,255,0.75);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-top: 0.2rem;
-  }
-
-  #wx-overlay .wx-loc {
-    font-size: 0.58rem;
-    color: rgba(150,180,255,0.45);
-    letter-spacing: 0.06em;
-    margin-top: 0.3rem;
-  }
+  #sphere-canvas { display: block; width: 100%; height: 100%; }
+  #wx-overlay { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 10; }
+  #wx-overlay .wx-icon-big { font-size: 2.4rem; line-height: 1; margin-bottom: 0.1rem; filter: drop-shadow(0 0 12px rgba(80,160,255,0.4)); }
+  #wx-overlay .wx-temp-big { font-size: 3.4rem; font-weight: 700; line-height: 1; letter-spacing: -0.03em; color: #fff; text-shadow: 0 0 30px rgba(100,180,255,0.3), 0 2px 8px rgba(0,0,0,0.8); }
+  #wx-overlay .wx-desc-big { font-size: 0.75rem; color: rgba(200,220,255,0.75); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.2rem; }
+  #wx-overlay .wx-loc { font-size: 0.58rem; color: rgba(150,180,255,0.45); letter-spacing: 0.06em; margin-top: 0.3rem; }
 
   #wx-stats-bar {
     position: absolute;
-    bottom: 0;
-    left: 0; right: 0;
+    bottom: 0; left: 0; right: 0;
     display: flex;
     justify-content: space-around;
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(to top, rgba(10,10,11,0.95) 60%, transparent);
+    background: linear-gradient(to top, rgba(5,5,7,1) 50%, rgba(5,5,7,0));
     z-index: 10;
   }
-
   .wx-stat-item { text-align: center; }
   .wx-stat-label { font-size: 0.55rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(150,180,255,0.5); margin-bottom: 0.1rem; }
   .wx-stat-val { font-size: 0.8rem; font-weight: 500; color: rgba(210,230,255,0.9); }
 
-  #wx-forecast-bar {
-    position: absolute;
-    bottom: 52px;
-    left: 0; right: 0;
-    display: flex;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 0 1.5rem;
-    z-index: 10;
-  }
-
+  #wx-forecast-bar { position: absolute; bottom: 50px; left: 0; right: 0; display: flex; justify-content: center; gap: 0.4rem; padding: 0 1.5rem; z-index: 10; }
   .fx-item { text-align: center; min-width: 44px; }
   .fx-time { font-size: 0.52rem; color: rgba(150,180,255,0.4); margin-bottom: 0.15rem; }
   .fx-icon { font-size: 0.85rem; }
   .fx-temp { font-size: 0.68rem; color: rgba(210,230,255,0.7); font-weight: 500; }
+  #panel-weather .panel-label { position: absolute; top: 1.25rem; left: 1.75rem; z-index: 20; }
 
-  #panel-weather .panel-label {
-    position: absolute;
-    top: 1.25rem;
-    left: 1.75rem;
-    z-index: 20;
-    margin-bottom: 0;
-  }
-
-  /* ── NRK News Panel ── */
-  #panel-news .panel-label,
-  .news-list { position: relative; z-index: 2; }
+  /* ── NRK News Layout Configuration ── */
   .news-list { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; flex: 1; }
-
-  .news-item {
-    padding: 0.5rem 0;
-    border-bottom: 0.5px solid rgba(60,100,200,0.15);
-  }
-
+  .news-item { padding: 0.5rem 0; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
   .news-item:first-child { padding-top: 0; }
   .news-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .news-category { font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(150,180,255,0.55); margin-bottom: 0.2rem; }
+  .news-headline { font-size: 0.88rem; line-height: 1.35; font-weight: 500; color: var(--text); }
+  .news-time { font-size: 0.6rem; color: rgba(150,180,255,0.38); margin-top: 0.2rem; }
+  .news-loading { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 2rem 0; }
 
-  .news-category {
-    font-size: 0.58rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: rgba(150,180,255,0.55);
-    margin-bottom: 0.2rem;
-  }
-
-  .news-headline {
-    font-size: 0.88rem;
-    line-height: 1.35;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .news-time {
-    font-size: 0.6rem;
-    color: rgba(150,180,255,0.38);
-    margin-top: 0.2rem;
-  }
-
-  .news-loading {
-    color: var(--muted);
-    font-size: 0.85rem;
-    text-align: center;
-    padding: 2rem 0;
-  }
-
-  /* ── Footer ── */
+  /* ── Footer UI ── */
   footer {
     grid-column: 1 / -1;
     background: var(--surface);
@@ -382,24 +222,15 @@
     flex-shrink: 0;
     z-index: 10;
   }
-
   .status-indicators { display: flex; gap: 1.5rem; }
-  .status-dot {
-    display: inline-block;
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    margin-right: 0.4rem;
-    vertical-align: middle;
-    background: var(--muted);
-  }
+  .status-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 0.4rem; vertical-align: middle; background: var(--muted); }
   .status-dot.ok { background: var(--green); }
   .status-dot.err { background: var(--red); }
-
   .val-green { color: var(--green); }
   .val-red   { color: var(--red); }
   .val-gold  { color: var(--gold); }
 
-  /* ── Info strip ── */
+  /* ── Bottom Widget Strip ── */
   #info-strip {
     display: flex;
     align-items: center;
@@ -407,68 +238,25 @@
     padding: 0 0.25rem;
     height: 26px;
     background: transparent;
-    border-top: 0.5px solid rgba(255,255,255,0.06);
+    border-top: 0.5px solid rgba(255,255,255,0.05);
     flex-shrink: 0;
     gap: 2rem;
     overflow: hidden;
     margin-top: 0.5rem;
   }
-
   .strip-left { display: flex; align-items: center; gap: 1.5rem; }
   .strip-right { display: flex; align-items: center; gap: 1.5rem; }
-
-  .strip-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.62rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
+  .strip-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
   .strip-val { color: var(--text); font-weight: 500; }
-
-  .clarity-pill {
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.15rem 0.55rem;
-    border-radius: 3px;
-    background: rgba(76,175,133,0.15);
-    color: var(--green);
-    border: 0.5px solid rgba(76,175,133,0.3);
-  }
-
+  .clarity-pill { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.55rem; border-radius: 3px; background: rgba(76,175,133,0.12); color: var(--green); border: 0.5px solid rgba(76,175,133,0.25); }
   .dom-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
-  .dom-bar { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .dom-bar { width: 60px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
   .dom-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 1s ease; }
-
-  .xrp-portfolio { font-size: 0.72rem; color: rgba(201,168,76,0.7); letter-spacing: 0.02em; margin-top: 0.15rem; }
-  .xrp-portfolio span { color: var(--gold); font-weight: 600; }
-
-  #footer-quote {
-    font-size: 0.6rem;
-    color: rgba(122,120,114,0.6);
-    letter-spacing: 0.04em;
-    font-style: italic;
-    max-width: 500px;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+  #footer-quote { font-size: 0.6rem; color: rgba(122,120,114,0.5); letter-spacing: 0.04em; font-style: italic; max-width: 500px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
   @media (max-width: 900px) {
-    html, body { height: auto; overflow: auto; }
-    main { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
-    #panel-xrp { grid-column: 1 / -1; min-height: 280px; }
-    #panel-xrp    { grid-row: 1; }
-    #panel-weather { grid-row: 3; }
-    #panel-news   { grid-row: 4; }
-    .panel { padding: 1.25rem; }
+    main { grid-template-columns: 1fr; grid-template-rows: auto; }
+    #panel-xrp { grid-column: 1 / -1; }
   }
 </style>
 </head>
@@ -476,7 +264,7 @@
 
 <main>
   <div class="nebula-space-bg"></div>
-  <canvas id="xrp-particles"></canvas>
+  <canvas id="global-particles"></canvas>
 
   <div class="panel" id="panel-xrp">
     <div class="xrp-greeting-row">
@@ -534,6 +322,7 @@
   </div>
 
   <div class="panel" id="panel-weather">
+    <div class="weather-nebula-glow"></div>
     <div class="panel-label"><span style="width:4px;height:4px;border-radius:50%;background:var(--blue);display:inline-block;"></span> Weather · Oslo</div>
     <div id="sphere-wrap">
       <canvas id="sphere-canvas"></canvas>
@@ -602,11 +391,10 @@ function setStatus(id, ok) {
   if (d) d.className = 'status-dot ' + (ok ? 'ok' : 'err');
 }
 
-// ── Clock ─────────────────────────────────────────────────────────────────────
+// ── Clock Loop ────────────────────────────────────────────────────────────────
 function tick() {
   const now  = new Date();
   const hour = now.getHours();
-
   let greet = 'Good night, Mike';
   if (hour >= 6  && hour < 12) greet = 'Good morning, Mike';
   else if (hour >= 12 && hour < 18) greet = 'Good afternoon, Mike';
@@ -619,17 +407,16 @@ function tick() {
 tick();
 setInterval(tick, 1000);
 
-// ── Portfolio Math Engine ────────────────────────────────────────────────────
+// ── Portfolio Calculator ─────────────────────────────────────────────────────
 function updatePortfolio(price) {
   var totalTokens = 7800; 
   var totalValue = totalTokens * price;
   var formattedVal = '$' + totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  
   if (el('xrp-portfolio-val')) el('xrp-portfolio-val').innerHTML = '<span>' + formattedVal + '</span>';
   if (el('strip-portfolio')) el('strip-portfolio').textContent = formattedVal;
 }
 
-// ── XHR Proxy Infrastructure ──────────────────────────────────────────────────
+// ── Network Framework ────────────────────────────────────────────────────────
 var PROXY = 'https://4tmcigbgkiuop9fthcbtlc3ye2hwtxhk.ui.nabu.casa/local';
 
 function xhrGet(url) {
@@ -642,7 +429,7 @@ function xhrGet(url) {
         try { resolve(JSON.parse(xhr.responseText)); } catch(e) { resolve(xhr.responseText); }
       } else { reject(new Error('HTTP ' + xhr.status)); }
     };
-    xhr.onerror = function() { reject(new Error('XHR network drop')); };
+    xhr.onerror = function() { reject(new Error('XHR connection drop')); };
     xhr.ontimeout = function() { reject(new Error('timeout')); };
     xhr.send();
   });
@@ -654,20 +441,8 @@ function xFetch(url) {
   });
 }
 
-// ── XRP Price & Charts ───────────────────────────────────────────────────────
+// ── XRP Telemetry & Line Charts ──────────────────────────────────────────────
 let xrpChart = null;
-const XRP_HISTORY_KEY = 'xrp_price_history';
-
-function xrpHistory() {
-  try { return JSON.parse(sessionStorage.getItem(XRP_HISTORY_KEY) || '[]'); } catch(e) { return []; }
-}
-function xrpSave(entry) {
-  const h = xrpHistory();
-  h.push(entry);
-  if (h.length > 288) h.shift(); 
-  sessionStorage.setItem(XRP_HISTORY_KEY, JSON.stringify(h));
-}
-
 function renderXRPChart(labels, data) {
   const canvas = el('xrp-chart');
   if (!canvas) return;
@@ -686,7 +461,7 @@ function renderXRPChart(labels, data) {
         fill: true,
         backgroundColor: function(ctx2) {
           const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, ctx2.chart.height);
-          g.addColorStop(0, 'rgba(40,100,220,0.15)');
+          g.addColorStop(0, 'rgba(40,100,220,0.12)');
           g.addColorStop(1, 'rgba(40,100,220,0)');
           return g;
         },
@@ -697,39 +472,10 @@ function renderXRPChart(labels, data) {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index', intersect: false,
-          backgroundColor: '#18181b',
-          titleColor: '#7a7872',
-          bodyColor: '#f0ede8',
-          borderColor: 'rgba(255,255,255,0.1)',
-          borderWidth: 1,
-          callbacks: { label: function(c) { return ' $' + Number(c.raw).toFixed(4); } }
-        }
-      },
+      plugins: { legend: { display: false } },
       scales: {
-        x: {
-          display: true,
-          grid: { color: 'rgba(255,255,255,0.02)' },
-          ticks: {
-            color: '#7a7872',
-            font: { family: "'Helvetica Neue', Helvetica, Arial, sans-serif", size: 9 },
-            maxTicksLimit: 8,
-            maxRotation: 0
-          }
-        },
-        y: {
-          display: true,
-          position: 'right',
-          grid: { color: 'rgba(255,255,255,0.03)' },
-          ticks: {
-            color: '#7a7872',
-            font: { family: "'Helvetica Neue', Helvetica, Arial, sans-serif", size: 9 },
-            callback: function(v) { return '$' + Number(v).toFixed(3); }
-          }
-        }
+        x: { display: true, grid: { color: 'rgba(255,255,255,0.015)' }, ticks: { color: '#7a7872', font: { size: 9 }, maxTicksLimit: 8, maxRotation: 0 } },
+        y: { display: true, position: 'right', grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#7a7872', font: { size: 9 }, callback: function(v) { return '$' + Number(v).toFixed(3); } } }
       }
     }
   });
@@ -738,7 +484,7 @@ function renderXRPChart(labels, data) {
 function loadXRP() {
   xhrGet('https://api.coinlore.net/api/ticker/?id=58').then(function(arr) {
     var t = arr && arr[0];
-    if (!t || !t.price_usd) throw new Error('bad ticker data');
+    if (!t || !t.price_usd) throw new Error('bad payload');
     renderXRPData({
       price:  parseFloat(t.price_usd),
       high:   parseFloat(t.high24h) || parseFloat(t.price_usd) * 1.01,
@@ -750,47 +496,28 @@ function loadXRP() {
   }).catch(function() {
     xFetch(PROXY + '/xrp.json').then(function(j) {
       var t = j.data && j.data[0];
-      if (!t) throw new Error('no proxy structural keys');
       var price = parseFloat(t.last);
       var open  = parseFloat(t.open24h);
-      renderXRPData({
-        price:  price,
-        high:   parseFloat(t.high24h),
-        low:    parseFloat(t.low24h),
-        vol:    parseFloat(t.volCcy24h),
-        change: ((price - open) / open) * 100,
-        mcap:   null
-      });
+      renderXRPData({ price: price, high: parseFloat(t.high24h), low: parseFloat(t.low24h), vol: parseFloat(t.volCcy24h), change: ((price - open) / open) * 100, mcap: null });
     }).catch(function() {
       el('xrp-price').textContent = '$—';
       setStatus('xrp', false);
     });
   });
 
-  // Pull historical 24h metrics safely from CryptoCompare
   xhrGet('https://min-api.cryptocompare.com/data/v2/histohour?fsym=XRP&tsym=USD&limit=24').then(function(res) {
-    if (!res || !res.Data || !res.Data.Data) throw new Error('Bad structural object path');
+    if (!res || !res.Data || !res.Data.Data) return;
     var points = res.Data.Data;
-    var prices = points.map(function(d) { return parseFloat(d.close); });
-    var labels = points.map(function(d) { 
-      return new Date(d.time * 1000).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
-    });
-    if (prices.length > 2) renderXRPChart(labels, prices);
-  }).catch(function() {
-    var sess = xrpHistory();
-    if (sess.length >= 2) {
-      renderXRPChart(
-        sess.map(function(h) { return new Date(h.t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }),
-        sess.map(function(h) { return h.v; })
-      );
-    }
+    renderXRPChart(
+      points.map(function(d) { return new Date(d.time * 1000).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}); }),
+      points.map(function(d) { return parseFloat(d.close); })
+    );
   });
 
   loadGlobalMacroData();
 }
 
 function renderXRPData(data) {
-  xrpSave({ t: Date.now(), v: data.price });
   updatePortfolio(data.price);
   el('xrp-price').textContent = '$' + data.price.toFixed(4);
   el('xrp-high').textContent  = '$' + data.high.toFixed(4);
@@ -802,31 +529,18 @@ function renderXRPData(data) {
   badge.className   = 'badge ' + (data.change >= 0 ? 'badge-green' : 'badge-red');
   setStatus('xrp', true);
 
-  // Updates the visual landscape log timestamp inside the footer element
   if (el('footer-updated')) {
     el('footer-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
 }
 
-// ── Market Macro Calculations (BTC.D & Altseason Status) ─────────────────────
 function loadGlobalMacroData() {
   xhrGet('https://api.coinlore.net/api/global/').then(function(res) {
     var data = res && res[0];
-    if (!data || !data.btc_d) throw new Error('Global macro missing metrics');
-
     var btcd = parseFloat(data.btc_d);
-    
     if (el('strip-btcd')) el('strip-btcd').textContent = btcd.toFixed(1) + '%';
     if (el('strip-btcd-bar')) el('strip-btcd-bar').style.width = btcd + '%';
-    
-    var seasonText = 'Bitcoin Era';
-    if (btcd < 48) {
-      seasonText = 'Altseason 🔥';
-    } else if (btcd >= 48 && btcd <= 54) {
-      seasonText = 'Neutral Zone';
-    }
-    
-    if (el('strip-alt')) el('strip-alt').textContent = seasonText;
+    if (el('strip-alt')) el('strip-alt').textContent = btcd < 48 ? 'Altseason 🔥' : 'Bitcoin Era';
   }).catch(function() {
     if (el('strip-btcd')) el('strip-btcd').textContent = '56.1%';
     if (el('strip-btcd-bar')) el('strip-btcd-bar').style.width = '56.1%';
@@ -834,24 +548,13 @@ function loadGlobalMacroData() {
   });
 }
 
-// ── Weather (Open-Meteo) ──────────────────────────────────────────────────────
-const WX_CODES = {
-  0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️', 45:'🌫️', 48:'🌫️',
-  51:'🌦️', 53:'🌦️', 55:'🌦️', 61:'🌧️', 63:'🌧️', 65:'🌧️',
-  71:'❄️', 73:'❄️', 75:'❄️', 77:'🌨️', 80:'🌧️', 81:'🌧️', 82:'⛈️',
-  85:'🌨️', 86:'🌨️', 95:'⛈️', 96:'⛈️', 99:'⛈️'
-};
-const WX_DESCS = {
-  0:'Clear sky', 1:'Mainly clear', 2:'Partly cloudy', 3:'Overcast',
-  45:'Fog', 48:'Icy fog', 51:'Light drizzle', 53:'Drizzle', 55:'Dense drizzle',
-  61:'Light rain', 63:'Rain', 65:'Heavy rain', 71:'Light snow', 73:'Snow', 75:'Heavy snow',
-  77:'Snow grains', 80:'Rain showers', 81:'Rain showers', 82:'Violent showers',
-  85:'Snow showers', 86:'Heavy snow showers', 95:'Thunderstorm', 96:'Thunderstorm w/ hail', 99:'Thunderstorm w/ heavy hail'
-};
+// ── Weather System ────────────────────────────────────────────────────────────
+const WX_CODES = { 0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️', 45:'🌫️', 48:'🌫️', 51:'🌦️', 53:'🌦️', 55:'🌦️', 61:'🌧️', 63:'🌧️', 65:'🌧️', 71:'❄️', 73:'❄️', 75:'❄️', 95:'⛈️' };
+const WX_DESCS = { 0:'Clear sky', 1:'Mainly clear', 2:'Partly cloudy', 3:'Overcast', 45:'Fog', 61:'Light rain', 63:'Rain', 73:'Snow', 95:'Thunderstorm' };
 
 async function loadWeather() {
   try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=59.9139&longitude=10.7522&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,visibility,uv_index,weather_code&hourly=temperature_2m,weather_code&timezone=Europe/Oslo&forecast_days=1&wind_speed_unit=ms';
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=59.9139&longitude=10.7522&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,weather_code&hourly=temperature_2m,weather_code&timezone=Europe/Oslo&forecast_days=1&wind_speed_unit=ms';
     const r = await fetch(url);
     const d = await r.json();
     const c = d.current;
@@ -861,16 +564,15 @@ async function loadWeather() {
     el('wx-wind').textContent   = Math.round(c.wind_speed_10m) + ' m/s';
     el('wx-humid').textContent  = c.relative_humidity_2m + '%';
     el('wx-pres').textContent   = Math.round(c.surface_pressure) + ' hPa';
-    el('wx-uv').textContent     = c.uv_index ?? '—';
     el('wx-icon').textContent   = WX_CODES[c.weather_code] || '🌡️';
     el('wx-desc').textContent   = WX_DESCS[c.weather_code] || 'Unknown';
     setStatus('wx', true);
 
-    const times  = d.hourly.time;
-    const temps  = d.hourly.temperature_2m;
-    const codes  = d.hourly.weather_code;
-    const nowH   = new Date(c.time).getHours();
-    const fc     = el('wx-forecast-bar');
+    const times = d.hourly.time;
+    const temps = d.hourly.temperature_2m;
+    const codes = d.hourly.weather_code;
+    const nowH  = new Date(c.time).getHours();
+    const fc    = el('wx-forecast-bar');
     
     if (fc) {
       fc.innerHTML = '';
@@ -888,78 +590,57 @@ async function loadWeather() {
       }
     }
   } catch(e) {
-    console.warn('Weather error:', e.message);
     setStatus('wx', false);
   }
 }
 
-// ── Native DOM-parsed NRK News RSS Engine ─────────────────────────────────────
+// ── News Parsing Module ──────────────────────────────────────────────────────
 function loadNRKNews() {
-  var rssUrl = 'https://www.nrk.no/nyheter/siste.rss';
-  
-  xFetch(rssUrl).then(function(xmlText) {
-    if (!xmlText) throw new Error('Empty payload stream');
-    
+  xFetch('https://www.nrk.no/nyheter/siste.rss').then(function(xmlText) {
+    if (!xmlText) return;
     var parser = new DOMParser();
     var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     var items  = xmlDoc.getElementsByTagName('item');
-    
     var nl = el('news-list');
     if (!nl) return;
     nl.innerHTML = ''; 
     
     var maxItems = Math.min(items.length, 4);
-    if (maxItems === 0) {
-      nl.innerHTML = '<div class="news-loading">Ingen nyheter tilgjengelig</div>';
-      return;
-    }
-
     for (var i = 0; i < maxItems; i++) {
       var item = items[i];
       var title = item.getElementsByTagName('title')[0] ? item.getElementsByTagName('title')[0].textContent : '';
-      var category = 'NRK NYHETER';
-      
-      if (item.getElementsByTagName('category')[0]) {
-        category = item.getElementsByTagName('category')[0].textContent;
-      }
-      
+      var cat = item.getElementsByTagName('category')[0] ? item.getElementsByTagName('category')[0].textContent : 'NRK NYHETER';
       var timeStr = 'Nylig';
       if (item.getElementsByTagName('pubDate')[0]) {
         var pDate = new Date(item.getElementsByTagName('pubDate')[0].textContent);
-        if (!isNaN(pDate.getTime())) {
-          timeStr = pDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-        }
+        if (!isNaN(pDate.getTime())) timeStr = pDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
       }
 
       var article = document.createElement('div');
       article.className = 'news-item';
-      article.innerHTML = '<div class="news-category">' + category + '</div>' +
+      article.innerHTML = '<div class="news-category">' + cat + '</div>' +
                           '<div class="news-headline">' + title + '</div>' +
                           '<div class="news-time">' + timeStr + '</div>';
       nl.appendChild(article);
     }
     setStatus('news', true);
-  }).catch(function(e) {
-    console.warn('NRK Stream exception:', e.message);
-    var nl = el('news-list');
-    if (nl) nl.innerHTML = '<div class="news-loading" style="color:var(--red)">Kunne ikke laste nyheter</div>';
+  }).catch(function() {
     setStatus('news', false);
   });
 }
 
-// ── Space Dust Particle Engine ───────────────────────────────────────────────
+// ── Seamless Global Space Dust Particle Simulation Engine ────────────────────
 function initSpaceDust() {
-  var canvas = el('xrp-particles');
+  var canvas = el('global-particles');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
   
   var particles = [];
-  var maxParticles = 25; // Balanced count across full layout window
+  var maxParticles = 45; // Smooth distribution across full 4K layout space
 
   function resize() {
-    var p = canvas.parentElement;
-    canvas.width = p.clientWidth;
-    canvas.height = p.clientHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
   resize();
   window.addEventListener('resize', resize);
@@ -968,10 +649,10 @@ function initSpaceDust() {
     return {
       x: Math.random() * canvas.width,
       y: initY ? Math.random() * canvas.height : canvas.height + 10,
-      size: Math.random() * 1.2 + 0.4, 
-      speedY: -(Math.random() * 0.05 + 0.03), // Ultra-slow cosmic drift velocity
-      speedX: (Math.random() * 0.04 - 0.02), 
-      opacity: Math.random() * 0.35 + 0.1 
+      size: Math.random() * 1.0 + 0.3, 
+      speedY: -(Math.random() * 0.04 + 0.015), // Ultra-slow drift speed simulation
+      speedX: (Math.random() * 0.02 - 0.01), 
+      opacity: Math.random() * 0.4 + 0.1 
     };
   }
 
@@ -988,7 +669,7 @@ function initSpaceDust() {
       
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, ' + p.opacity + ')'; // Premium, clean space-white dust color
+      ctx.fillStyle = 'rgba(235, 242, 255, ' + p.opacity + ')'; // Premium icy white-blue stardust accent
       ctx.fill();
       
       if (p.y < -10 || p.x < -10 || p.x > canvas.width + 10) {
@@ -1000,7 +681,7 @@ function initSpaceDust() {
   animate();
 }
 
-// ── Startup Matrix ────────────────────────────────────────────────────────────
+// ── Initialization Engine ───────────────────────────────────────────────────
 window.onload = function() {
   loadXRP();
   loadWeather();
