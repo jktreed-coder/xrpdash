@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard</title>
 
+<!-- Tizen-Safe Legacy Charting Component Bundle -->
+<script src="https://jsdelivr.net"></script>
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,9 +25,7 @@
     --green: #4caf85;
     --red: #e05c5c;
     --blue: #5b9bd5;
-    --font-serif: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --font-sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --font-mono:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
 
   html, body {
@@ -40,30 +41,24 @@
 
   body {
     display: grid;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: auto 1fr;
     grid-template-columns: 1fr;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    padding: 1.5rem;
   }
 
   .xrp-greeting-row {
     display: flex;
     align-items: baseline;
-    gap: 1.25rem;
-    margin-bottom: 2.8rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
     flex-shrink: 0;
   }
 
-  .xrp-greeting-row .header-time {
-    margin-left: auto;
-  }
-
-  .header-left { display: flex; align-items: baseline; gap: 1.5rem; }
-
   .greeting {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--gold);
     letter-spacing: 0.04em;
@@ -71,29 +66,19 @@
   }
 
   .header-time {
-    font-family: var(--font-sans);
     font-size: 0.75rem;
     color: var(--muted);
     letter-spacing: 0.05em;
   }
 
-  .header-date {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    color: var(--muted);
-    letter-spacing: 0.02em;
-  }
-
   main {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1.2fr 0.8fr;
     gap: 1px;
     background: var(--border);
     overflow: hidden;
     min-height: 0;
-    position: relative;
-    z-index: 3;
   }
 
   #panel-xrp { grid-column: 1 / -1; grid-row: 1; }
@@ -102,26 +87,23 @@
 
   .panel {
     background: var(--bg);
-    padding: 1.5rem 2rem;
+    padding: 1.25rem 1.75rem;
     position: relative;
     overflow: hidden;
-    min-height: 0;
     display: flex;
     flex-direction: column;
-    z-index: 3;
   }
 
   .panel-label {
-    font-family: var(--font-sans);
     font-size: 0.65rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 0.75rem;
-    flex-shrink: 0;
+    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-shrink: 0;
   }
 
   .panel-label::before {
@@ -133,21 +115,19 @@
     background: var(--gold);
   }
 
-  .dot-live { background: var(--green) !important; animation: pulse 2s infinite; }
+  .dot-live { background: var(--green); width: 6px; height: 6px; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
 
-
-
-  /* ── XRP Panel ── */
+  /* XRP Frame Setup */
   .xrp-header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     flex-shrink: 0;
   }
 
@@ -158,15 +138,13 @@
   }
 
   .xrp-price {
-    font-family: var(--font-sans);
-    font-size: 3.2rem;
+    font-size: 2.8rem;
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
   }
 
   .badge {
-    font-family: var(--font-sans);
     font-size: 0.7rem;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
@@ -180,1526 +158,180 @@
     display: flex;
     gap: 2rem;
     align-items: baseline;
+    margin-bottom: 0.5rem;
+    flex-shrink: 0;
   }
 
-  .xrp-meta-item { font-family: var(--font-sans); font-size: 0.72rem; color: var(--muted); }
+  .xrp-meta-item { font-size: 0.72rem; color: var(--muted); }
   .xrp-meta-val  { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
-
-  #panel-xrp {
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* blue glow orb behind the chart */
-  #panel-xrp::before {
-    content: '';
-    position: absolute;
-    bottom: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    height: 260px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(30,80,200,0.45) 0%, rgba(10,30,120,0.2) 45%, transparent 70%);
-    filter: blur(40px);
-    pointer-events: none;
-    z-index: 0;
-    animation: glowBreathe 30s ease-in-out infinite;
-  }
-
-  .xrp-header, .xrp-price-row { position: relative; z-index: 1; }
 
   .xrp-chart-wrap {
     flex: 1;
     position: relative;
     min-height: 0;
-    margin: 0.5rem -0.25rem 0;
-    z-index: 1;
-  }
-
-  .xrp-chart-wrap canvas { width: 100% !important; height: 100% !important; }
-
-  /* ── Weather Sphere ── */
-  #panel-weather {
-    grid-column: 1;
-    grid-row: 2;
-    padding: 0;
-    overflow: hidden;
-    position: relative;
-  }
-
-  #sphere-wrap {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #sphere-canvas {
-    display: block;
     width: 100%;
-    height: 100%;
   }
 
-  /* halo glow behind sphere */
-  #sphere-halo {
-    position: absolute;
-    width: 340px;
-    height: 340px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(30,80,180,0.55) 0%, rgba(10,30,100,0.3) 40%, transparent 70%);
-    filter: blur(38px);
-    pointer-events: none;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: haloBreathe 40s ease-in-out infinite;
+  .xrp-chart-wrap canvas {
+    width: 100% !important;
+    height: 100% !important;
   }
 
-  /* floating text overlay inside sphere */
-  #wx-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  #wx-overlay .wx-icon-big {
-    font-size: 2.8rem;
-    line-height: 1;
-    margin-bottom: 0.3rem;
-    filter: drop-shadow(0 0 12px rgba(80,160,255,0.7));
-  }
-
-  #wx-overlay .wx-temp-big {
-    font-family: var(--font-sans);
-    font-size: 3.8rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.03em;
-    color: #fff;
-    text-shadow: 0 0 30px rgba(100,180,255,0.6), 0 2px 8px rgba(0,0,0,0.8);
-  }
-
-  #wx-overlay .wx-desc-big {
-    font-size: 0.78rem;
-    color: rgba(200,220,255,0.75);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-top: 0.3rem;
-    font-family: var(--font-sans);
-  }
-
-  #wx-overlay .wx-loc {
-    font-family: var(--font-sans);
-    font-size: 0.6rem;
-    color: rgba(150,180,255,0.45);
-    letter-spacing: 0.06em;
-    margin-top: 0.5rem;
-  }
-
-  /* stats row below sphere */
-  #wx-stats-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0; right: 0;
+  /* Weather UI Setup */
+  .weather-container {
     display: flex;
-    justify-content: space-around;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(to top, rgba(10,10,11,0.95) 60%, transparent);
-    z-index: 10;
-  }
-
-  .wx-stat-item { text-align: center; }
-  .wx-stat-label { font-family: var(--font-sans); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(150,180,255,0.5); margin-bottom: 0.2rem; }
-  .wx-stat-val { font-size: 0.88rem; font-weight: 500; color: rgba(210,230,255,0.9); }
-
-  /* forecast strip at very bottom */
-  #wx-forecast-bar {
-    position: absolute;
-    bottom: 62px;
-    left: 0; right: 0;
-    display: flex;
+    flex-direction: column;
     justify-content: center;
-    gap: 0.4rem;
-    padding: 0 1.5rem;
-    z-index: 10;
-  }
-
-  .fx-item {
-    text-align: center;
-    min-width: 44px;
-  }
-  .fx-time { font-family: var(--font-sans); font-size: 0.55rem; color: rgba(150,180,255,0.4); margin-bottom: 0.15rem; }
-  .fx-icon { font-size: 0.9rem; }
-  .fx-temp { font-size: 0.72rem; color: rgba(210,230,255,0.7); font-weight: 500; }
-
-  /* panel label stays top-left */
-  #panel-weather .panel-label {
-    position: absolute;
-    top: 1.25rem;
-    left: 1.75rem;
-    z-index: 20;
-    margin-bottom: 0;
-  }
-
-  /* ── NRK News ── */
-  #panel-news {
-    grid-column: 2;
-    grid-row: 2;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* blue glow orb — mirrors the sphere halo */
-  #panel-news::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 340px;
-    height: 340px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(30,80,180,0.38) 0%, rgba(10,30,100,0.18) 40%, transparent 70%);
-    filter: blur(38px);
-    pointer-events: none;
-    z-index: 0;
-    animation: glowBreatheCenter 30s ease-in-out infinite; animation-delay: -15s;
-  }
-
-  #panel-news .panel-label,
-  .news-list { position: relative; z-index: 1; }
-
-  .news-list { display: flex; flex-direction: column; gap: 0; overflow: hidden; flex: 1; }
-
-  .news-item {
-    padding: 0.55rem 0;
-    border-bottom: 0.5px solid rgba(60,100,200,0.18);
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .news-item:first-child { padding-top: 0; }
-  .news-item:last-child { border-bottom: none; }
-
-  .news-item:hover .news-headline { color: var(--gold); }
-
-  .news-category {
-    font-family: var(--font-sans);
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: rgba(150,180,255,0.55);
-    margin-bottom: 0.3rem;
-  }
-
-  .news-headline {
-    font-size: 0.9rem;
-    line-height: 1.4;
-    font-weight: 500;
-    color: var(--text);
-    transition: color 0.15s;
-  }
-
-  .news-time {
-    font-family: var(--font-sans);
-    font-size: 0.62rem;
-    color: rgba(150,180,255,0.38);
-    margin-top: 0.3rem;
-  }
-
-  .news-loading {
-    color: var(--muted);
-    font-size: 0.85rem;
-    text-align: center;
-    padding: 2rem 0;
-  }
-
-  /* ── Footer status bar ── */
-  footer {
-    grid-column: 1 / -1;
-    background: var(--surface);
-    border-top: 0.5px solid var(--border);
-    padding: 0.4rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: var(--font-sans);
-    font-size: 0.62rem;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-    flex-shrink: 0;
-  }
-
-  .status-indicators { display: flex; gap: 1.5rem; }
-  .status-dot {
-    display: inline-block;
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    margin-right: 0.4rem;
-    vertical-align: middle;
-    background: var(--muted);
-  }
-  .status-dot.ok { background: var(--green); }
-  .status-dot.err { background: var(--red); }
-
-  /* misc */
-  .val-green { color: var(--green); }
-  .val-red   { color: var(--red); }
-  .val-gold  { color: var(--gold); }
-
-  .shimmer {
-    background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 4px;
-    height: 1em;
-    display: inline-block;
-    width: 80px;
-  }
-  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-
-  @keyframes glowBreathe {
-    0%, 100% { opacity: 0.08; transform: translateX(-50%) scale(0.92); }
-    50%       { opacity: 1.0;  transform: translateX(-50%) scale(1.12); }
-  }
-
-  @keyframes glowBreatheCenter {
-    0%, 100% { opacity: 0.07; transform: translate(-50%, -50%) scale(0.9); }
-    50%       { opacity: 1.0;  transform: translate(-50%, -50%) scale(1.14); }
-  }
-
-  /* Sphere halo — almost stationary, very subtle drift */
-  @keyframes haloBreathe {
-    0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1.0); }
-    50%       { opacity: 0.72; transform: translate(-50%, -50%) scale(1.03); }
-  }
-
-  @media (max-width: 900px) {
-    html, body { height: auto; overflow: auto; }
-    main { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
-    #panel-xrp { grid-column: 1 / -1; min-height: 280px; }
-    #panel-xrp    { grid-row: 1; }
-    #panel-weather { grid-row: 3; }
-    #panel-news   { grid-row: 4; }
-    header { padding: 1rem 1.25rem; }
-    .panel { padding: 1.25rem; }
-    footer { padding: 0.5rem 1.25rem; }
-  }
-
-
-
-  /* ── Info strip ── */
-  #info-strip {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0.25rem;
-    height: 26px;
-    background: transparent;
-    border-top: 0.5px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
-    gap: 2rem;
-    overflow: hidden;
-    margin-top: 0.5rem;
-  }
-
-  .strip-left { display: flex; align-items: center; gap: 1.5rem; }
-  .strip-right { display: flex; align-items: center; gap: 1.5rem; }
-
-  .strip-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.62rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .strip-val {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .clarity-pill {
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.15rem 0.55rem;
-    border-radius: 3px;
-    background: rgba(76,175,133,0.15);
-    color: var(--green);
-    border: 0.5px solid rgba(76,175,133,0.3);
-  }
-
-  .dom-bar-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .dom-bar {
-    width: 60px;
-    height: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .dom-bar-fill {
+    align-items: flex-start;
     height: 100%;
-    background: var(--gold);
-    border-radius: 2px;
-    transition: width 1s ease;
   }
+  .wx-temp { font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; }
+  .wx-desc { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-top: 0.25rem; }
 
-  /* ── Ticker tape ── */
-  #ticker-wrap {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 22px;
-    overflow: hidden;
-    background: rgba(10,10,11,0.7);
-    border-top: 0.5px solid var(--border);
-    z-index: 5;
-  }
-
-  #ticker-track {
-    display: flex;
-    align-items: center;
-    gap: 3rem;
-    white-space: nowrap;
-    animation: tickerScroll 40s linear infinite;
-    height: 100%;
-    padding: 0 1rem;
-  }
-
-  @keyframes tickerScroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  .tick-item {
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    flex-shrink: 0;
-  }
-
-  .tick-item .tick-val { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
-  .tick-item .tick-up  { color: var(--green); }
-  .tick-item .tick-dn  { color: var(--red); }
-
-  /* ── XRP portfolio line ── */
-  .xrp-portfolio {
-    font-size: 0.72rem;
-    color: rgba(201,168,76,0.7);
-    letter-spacing: 0.02em;
-    margin-top: 0.15rem;
-  }
-
-  .xrp-portfolio span { color: var(--gold); font-weight: 600; }
-
-
-  /* ── Weather particles canvas ── */
-  #wx-particles {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 5;
-  }
-
-  /* ── Quote in footer ── */
-  #footer-quote {
-    font-size: 0.6rem;
-    color: rgba(122,120,114,0.6);
-    letter-spacing: 0.04em;
-    font-style: italic;
-    max-width: 500px;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  /* ── Aurora ── */
-  .aurora-wrap {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 2;
-    overflow: hidden;
-  }
-
-  .aurora-band {
-    position: absolute;
-    left: -20%;
-    width: 140%;
-    border-radius: 50%;
-    filter: blur(72px);
-    mix-blend-mode: screen;
-    opacity: 0;
-  }
-
-  .aurora-band:nth-child(1) {
-    top: -30%;
-    height: 55%;
-    background: radial-gradient(ellipse at 40% 50%, rgba(20,60,160,0.32) 0%, rgba(10,30,100,0.14) 50%, transparent 75%);
-    animation: aurora1 28s ease-in-out infinite;
-  }
-
-  .aurora-band:nth-child(2) {
-    top: -22%;
-    height: 48%;
-    background: radial-gradient(ellipse at 65% 50%, rgba(0,80,120,0.22) 0%, rgba(0,40,80,0.10) 55%, transparent 75%);
-    animation: aurora2 34s ease-in-out infinite;
-    animation-delay: -12s;
-  }
-
-  .aurora-band:nth-child(3) {
-    top: -18%;
-    height: 44%;
-    background: radial-gradient(ellipse at 30% 50%, rgba(30,100,80,0.14) 0%, rgba(10,60,50,0.07) 55%, transparent 75%);
-    animation: aurora3 42s ease-in-out infinite;
-    animation-delay: -22s;
-  }
-
-  @keyframes aurora1 {
-    0%,100% { opacity: 0.0; transform: translateX(0%)   scaleY(1.0);  }
-    25%      { opacity: 0.8; transform: translateX(4%)   scaleY(1.08); }
-    50%      { opacity: 0.5; transform: translateX(-3%)  scaleY(0.95); }
-    75%      { opacity: 0.9; transform: translateX(6%)   scaleY(1.05); }
-  }
-
-  @keyframes aurora2 {
-    0%,100% { opacity: 0.0; transform: translateX(0%)   scaleY(1.0);  }
-    30%      { opacity: 0.7; transform: translateX(-5%)  scaleY(1.10); }
-    60%      { opacity: 0.4; transform: translateX(4%)   scaleY(0.92); }
-    80%      { opacity: 0.8; transform: translateX(-2%)  scaleY(1.06); }
-  }
-
-  @keyframes aurora3 {
-    0%,100% { opacity: 0.0; transform: translateX(0%)   scaleY(1.0);  }
-    35%      { opacity: 0.6; transform: translateX(7%)   scaleY(1.12); }
-    65%      { opacity: 0.3; transform: translateX(-4%)  scaleY(0.96); }
-    85%      { opacity: 0.7; transform: translateX(3%)   scaleY(1.04); }
-  }
-
-  /* ── XRP particle canvas ── */
-  #xrp-particles {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
+  /* News Interface Setup */
+  .news-container { display: flex; flex-direction: column; gap: 0.5rem; overflow: hidden; height: 100%; justify-content: center; }
+  .news-item { font-size: 0.8rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .news-time { font-size: 0.6rem; color: var(--muted); margin-bottom: 0.1rem; }
 </style>
 </head>
 <body>
 
-
+<div class="xrp-greeting-row">
+  <div class="greeting">System Metrics Dashboard</div>
+  <div id="live-clock" class="header-time">Initializing Terminal...</div>
+</div>
 
 <main>
-
-  <!-- ── XRP Chart ── -->
-  <div class="panel" id="panel-xrp">
-    <div class="xrp-greeting-row">
-      <div class="greeting" id="hdr-greeting">—</div>
-      <div class="header-date" id="hdr-date">—</div>
-      <div class="header-time" id="hdr-time">—</div>
-    </div>
+  <!-- XRP Component -->
+  <div id="panel-xrp" class="panel">
+    <div class="panel-label">XRP TO USD <span class="dot-live"></span></div>
     <div class="xrp-header">
-      <div class="panel-label" style="margin-bottom:0;"><span class="dot-live" style="width:4px;height:4px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;"></span> XRP / USD · Live</div>
-      <div class="xrp-meta" id="xrp-meta-row">
-        <span class="xrp-meta-item">MCap <span class="xrp-meta-val" id="xrp-mcap">—</span></span>
-        <span class="xrp-meta-item">Vol 24h <span class="xrp-meta-val" id="xrp-vol">—</span></span>
-        <span class="xrp-meta-item">High 24h <span class="xrp-meta-val val-green" id="xrp-high">—</span></span>
-        <span class="xrp-meta-item">Low 24h <span class="xrp-meta-val val-red" id="xrp-low">—</span></span>
+      <div class="xrp-price-row">
+        <span id="xrp-price" class="xrp-price">$--.----</span>
+        <span id="xrp-badge" class="badge">--%</span>
       </div>
     </div>
-    <div class="xrp-price-row" style="margin-bottom:0.1rem;">
-      <div class="xrp-price" id="xrp-price">$—</div>
-      <span class="badge" id="xrp-badge">—</span>
+    <div class="xrp-meta">
+      <div class="xrp-meta-item">24H HIGH <span id="xrp-high" class="xrp-meta-val">--</span></div>
+      <div class="xrp-meta-item">24H LOW <span id="xrp-low" class="xrp-meta-val">--</span></div>
     </div>
-    <div class="xrp-portfolio">Portfolio · <span id="xrp-portfolio-val">—</span></div>
     <div class="xrp-chart-wrap">
-      <canvas id="xrp-particles"></canvas>
-      <canvas id="xrp-chart" style="position:relative;z-index:1;"></canvas>
-    </div>
-
-    <div id="info-strip">
-      <div class="strip-left">
-        <div class="strip-item">
-          <span>CLARITY Act</span>
-          <span class="clarity-pill">Senate Banking ✓</span>
-        </div>
-        <div class="strip-item">
-          BTC.D <span class="strip-val" id="strip-btcd">—</span>
-          <div class="dom-bar-wrap">
-            <div class="dom-bar"><div class="dom-bar-fill" id="strip-btcd-bar" style="width:0%"></div></div>
-          </div>
-        </div>
-        <div class="strip-item">
-          Altseason <span class="strip-val" id="strip-alt">—</span>
-        </div>
-      </div>
-      <div class="strip-right">
-        <div class="strip-item">
-          XRP Stack <span class="strip-val">7,800 XRP</span>
-        </div>
-        <div class="strip-item">
-          Portfolio <span class="strip-val" id="strip-portfolio">—</span>
-        </div>
-        <div class="strip-item">
-          Next target <span class="strip-val" style="color:var(--gold)">$10.00</span>
-        </div>
-      </div>
+      <canvas id="xrpChart"></canvas>
     </div>
   </div>
 
-  <!-- ── Weather Sphere ── -->
-  <div class="panel" id="panel-weather">
-    <div class="panel-label"><span style="width:4px;height:4px;border-radius:50%;background:var(--blue);display:inline-block;"></span> Weather · Oslo</div>
-
-    <!-- glow halo behind sphere -->
-    <div id="sphere-halo"></div>
-
-    <!-- Weather particles -->
-    <canvas id="wx-particles"></canvas>
-
-    <!-- WebGL canvas -->
-    <div id="sphere-wrap">
-      <canvas id="sphere-canvas"></canvas>
-    </div>
-
-    <!-- floating text inside sphere -->
-    <div id="wx-overlay">
-      <div class="wx-icon-big" id="wx-icon">—</div>
-      <div class="wx-temp-big"><span id="wx-temp">—</span>°C</div>
-      <div class="wx-desc-big" id="wx-desc">Loading…</div>
-      <div class="wx-loc">Oslo · 59.91° N</div>
-    </div>
-
-    <!-- hourly forecast strip -->
-    <div id="wx-forecast-bar" id="wx-forecast"></div>
-
-    <!-- stats bar -->
-    <div id="wx-stats-bar">
-      <div class="wx-stat-item">
-        <div class="wx-stat-label">Feels like</div>
-        <div class="wx-stat-val" id="wx-feels">—</div>
-      </div>
-      <div class="wx-stat-item">
-        <div class="wx-stat-label">Wind</div>
-        <div class="wx-stat-val" id="wx-wind">—</div>
-      </div>
-      <div class="wx-stat-item">
-        <div class="wx-stat-label">Humidity</div>
-        <div class="wx-stat-val" id="wx-humid">—</div>
-      </div>
-      <div class="wx-stat-item">
-        <div class="wx-stat-label">Pressure</div>
-        <div class="wx-stat-val" id="wx-pres">—</div>
-      </div>
-      <div class="wx-stat-item">
-        <div class="wx-stat-label">UV</div>
-        <div class="wx-stat-val" id="wx-uv">—</div>
-      </div>
+  <!-- Weather Component -->
+  <div id="panel-weather" class="panel">
+    <div class="panel-label">Local Environment Metrics</div>
+    <div class="weather-container">
+      <div id="weather-temp" class="wx-temp">--°C</div>
+      <div id="weather-desc" class="wx-desc">Awaiting sensor uplink...</div>
     </div>
   </div>
 
-  <!-- ── NRK News ── -->
-  <div class="panel" id="panel-news">
-    <div class="panel-label"><span style="width:4px;height:4px;border-radius:50%;background:var(--red);display:inline-block;"></span> NRK Nyheter</div>
-    <div class="news-list" id="news-list">
-      <div class="news-loading">Henter nyheter…</div>
+  <!-- News Feed Component -->
+  <div id="panel-news" class="panel">
+    <div class="panel-label">Global Bulletins</div>
+    <div id="news-list" class="news-container">
+      <div class="news-item">Awaiting news satellite network connection...</div>
     </div>
   </div>
-
 </main>
 
-<footer>
-  <div class="status-indicators">
-    <span><span class="status-dot" id="st-xrp"></span>XRP</span>
-    <span><span class="status-dot" id="st-wx"></span>Weather</span>
-    <span><span class="status-dot" id="st-news"></span>NRK</span>
-  </div>
-  <div id="footer-quote"></div>
-  <span id="footer-updated">Last updated: —</span>
-</footer>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-// ── Helpers ──────────────────────────────────────────────────────────────────
-function el(id) { return document.getElementById(id); }
-function fmt(n, dec=2) { return Number(n).toFixed(dec); }
-function fmtM(n) {
-  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
-  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
-  return '$' + n.toLocaleString();
-}
-function setStatus(id, ok) {
-  el('st-'+id).className = 'status-dot ' + (ok ? 'ok' : 'err');
-}
+  // Global reference variable for Tizen chart disposal properties
+  var activeChartInstance = null;
 
-// ── Clock ─────────────────────────────────────────────────────────────────────
-function tick() {
-  const now  = new Date();
-  const hour = now.getHours();
+  // 1. Clock Engine Sync
+  function updateClock() {
+    var dateObject = new Date();
+    document.getElementById("live-clock").innerHTML = dateObject.toLocaleDateString() + " &mdash; " + dateObject.toLocaleTimeString();
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
 
-  let greet;
-  if (hour >= 6  && hour < 12) greet = 'Good morning, Mike';
-  else if (hour >= 12 && hour < 18) greet = 'Good afternoon, Mike';
-  else if (hour >= 18 && hour < 23) greet = 'Good evening, Mike';
-  else                               greet = 'Good night, Mike';
+  // 2. Tizen-Compliant Cryptographic Processing
+  function grabCryptoMetrics() {
+    var xhrObj = new XMLHttpRequest();
+    var queryPath = "https://coingecko.com";
+    
+    xhrObj.open("GET", queryPath, true);
+    xhrObj.onreadystatechange = function () {
+      if (xhrObj.readyState === 4 && jsonObjIsValid(xhrObj.status)) {
+        try {
+          var parsedObj = JSON.parse(xhrObj.responseText);
+          var mData = parsedObj.market_data;
+          
+          var activePrice = mData.current_price.usd;
+          var variance = mData.price_change_percentage_24h;
+          var peakVal = mData.high_24h.usd;
+          var floorVal = mData.low_24h.usd;
+          var trackingTrendLine = mData.sparkline_7d.price;
 
-  el('hdr-greeting').textContent = greet;
-  el('hdr-time').textContent     = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  el('hdr-date').textContent     = now.toLocaleDateString('en-GB', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-}
-tick();
-setInterval(tick, 1000);
+          document.getElementById("xrp-price").innerHTML = "$" + activePrice.toFixed(4);
+          document.getElementById("xrp-high").innerHTML = "$" + peakVal.toFixed(4);
+          document.getElementById("xrp-low").innerHTML = "$" + floorVal.toFixed(4);
+          
+          var changeBadge = document.getElementById("xrp-badge");
+          changeBadge.innerHTML = (variance >= 0 ? "+" : "") + variance.toFixed(2) + "%";
+          changeBadge.className = variance >= 0 ? "badge badge-green" : "badge badge-red";
 
-// ── XRP Chart ────────────────────────────────────────────────────────────────
-let xrpChart = null;
-const XRP_HISTORY_KEY = 'xrp_price_history';
-
-function xrpHistory() {
-  try { return JSON.parse(sessionStorage.getItem(XRP_HISTORY_KEY) || '[]'); } catch { return []; }
-}
-function xrpSave(entry) {
-  const h = xrpHistory();
-  h.push(entry);
-  if (h.length > 288) h.shift(); // max 24h at 5min intervals
-  sessionStorage.setItem(XRP_HISTORY_KEY, JSON.stringify(h));
-}
-
-function renderXRPChart(labels, data) {
-  const canvas = el('xrp-chart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (xrpChart) xrpChart.destroy();
-
-  const isUp = data.length < 2 || data[data.length-1] >= data[0];
-  const lineColor = '#4a90d9';          // always space blue
-  const fillColor = 'rgba(40,100,220,'; // blue fill regardless of direction
-  void isUp; // kept for possible future use
-
-  xrpChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        borderColor: lineColor,
-        borderWidth: 1.5,
-        pointRadius: 0,
-        fill: true,
-        backgroundColor: (ctx2) => {
-          const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, ctx2.chart.height);
-          g.addColorStop(0, fillColor + '0.2)');
-          g.addColorStop(1, fillColor + '0)');
-          return g;
-        },
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index', intersect: false,
-          backgroundColor: '#18181b',
-          titleColor: '#7a7872',
-          bodyColor: '#f0ede8',
-          borderColor: 'rgba(255,255,255,0.1)',
-          borderWidth: 1,
-          callbacks: { label: c => ' $' + Number(c.raw).toFixed(4) }
+          generateLegacyChart(trackingTrendLine, variance >= 0 ? "#4caf85" : "#e05c5c");
+        } catch (jsonErr) {
+          console.log("XRP Render Fail: ", jsonErr);
         }
+      }
+    };
+    xhrObj.send();
+  }
+
+  function generateLegacyChart(dataArray, colorHex) {
+    var contextRef = document.getElementById('xrpChart').getContext('2d');
+    var virtualXLabels = [];
+    for (var positionIdx = 0; positionIdx < dataArray.length; positionIdx++) {
+      virtualXLabels.push("");
+    }
+
+    if (activeChartInstance) {
+      activeChartInstance.destroy(); // Flushes cached DOM data nodes out of active hardware memory
+    }
+
+    activeChartInstance = new Chart(contextRef, {
+      type: 'line',
+      data: {
+        labels: virtualXLabels,
+        datasets: [{
+          data: dataArray,
+          borderColor: colorHex,
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          lineTension: 0.1
+        }]
       },
-      scales: {
-        x: {
-          display: true,
-          grid: { color: 'rgba(255,255,255,0.03)' },
-          ticks: {
-            color: '#7a7872',
-            font: { family: "'Helvetica Neue', Helvetica, Arial, sans-serif", size: 9 },
-            maxTicksLimit: 8,
-            maxRotation: 0
-          }
-        },
-        y: {
-          display: true,
-          position: 'right',
-          grid: { color: 'rgba(255,255,255,0.04)' },
-          ticks: {
-            color: '#7a7872',
-            font: { family: "'Helvetica Neue', Helvetica, Arial, sans-serif", size: 9 },
-            callback: v => '$' + Number(v).toFixed(3)
-          }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: { display: false },
+        elements: { point: { radius: 0 } },
+        scales: {
+          xAxes: [{ display: false, gridLines: { display: false } }],
+          yAxes: [{ display: false, gridLines: { display: false } }]
         }
       }
-    }
-  });
-}
-
-// Pi proxy via Nabu Casa — serves pre-fetched JSON files with no CORS issues
-const PROXY = 'https://4tmcigbgkiuop9fthcbtlc3ye2hwtxhk.ui.nabu.casa/local';
-
-async function xFetch(url) {
-  try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(7000) });
-    if (r.ok) return r.json();
-  } catch(e) {}
-  const r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(url), { signal: AbortSignal.timeout(7000) });
-  return r2.json();
-}
-
-async function loadXRP() {
-  try {
-    // CoinLore: built for public web embedding, explicit CORS *, no key needed
-    // XRP id=58, also try Nabu Casa cached file and Kraken as fallbacks
-    let data = null;
-
-    try {
-      const j = await fetch('https://api.coinlore.net/api/ticker/?id=58');
-      const arr = await j.json();
-      const t = arr && arr[0];
-      if (t && t.price_usd) {
-        data = {
-          price:  parseFloat(t.price_usd),
-          high:   parseFloat(t.percent_change_24h) > 0
-                    ? parseFloat(t.price_usd) * 1.02
-                    : parseFloat(t.price_usd),
-          low:    parseFloat(t.price_usd) * 0.98,
-          vol:    parseFloat(t.volume24),
-          change: parseFloat(t.percent_change_24h),
-          mcap:   parseFloat(t.market_cap_usd)
-        };
-      }
-    } catch(e) { console.warn('CoinLore failed', e.message); }
-
-    // Fallback: Nabu Casa cached file
-    if (!data) {
-      try {
-        const j = await xFetch(PROXY + '/xrp.json');
-        const t = j.data && j.data[0];
-        if (t) {
-          const price = parseFloat(t.last);
-          const open  = parseFloat(t.open24h);
-          data = {
-            price,
-            high:   parseFloat(t.high24h),
-            low:    parseFloat(t.low24h),
-            vol:    parseFloat(t.volCcy24h),
-            change: ((price - open) / open) * 100,
-            mcap:   null
-          };
-        }
-      } catch(e) { console.warn('Nabu Casa cache failed', e.message); }
-    }
-
-    // Fallback: Kraken
-    if (!data) {
-      try {
-        const j = await xFetch('https://api.kraken.com/0/public/Ticker?pair=XRPUSD');
-        const t = j.result && j.result['XXRPZUSD'];
-        if (t) {
-          const price = parseFloat(t.c[0]);
-          const open  = parseFloat(t.o);
-          data = {
-            price,
-            high:   parseFloat(t.h[1]),
-            low:    parseFloat(t.l[1]),
-            vol:    parseFloat(t.v[1]),
-            change: ((price - open) / open) * 100,
-            mcap:   null
-          };
-        }
-      } catch(e) { console.warn('Kraken failed', e.message); }
-    }
-
-    if (!data) throw new Error('All XRP sources failed');
-
-    xrpSave({ t: Date.now(), v: data.price });
-    updatePortfolio(data.price);
-
-    el('xrp-price').textContent = '$' + data.price.toFixed(4);
-    el('xrp-high').textContent  = '$' + data.high.toFixed(4);
-    el('xrp-low').textContent   = '$' + data.low.toFixed(4);
-    el('xrp-vol').textContent   = fmtM(data.vol);
-    el('xrp-mcap').textContent  = data.mcap ? fmtM(data.mcap) : '—';
-
-    const badge = el('xrp-badge');
-    badge.textContent = (data.change >= 0 ? '+' : '') + fmt(data.change) + '%';
-    badge.className   = 'badge ' + (data.change >= 0 ? 'badge-green' : 'badge-red');
-
-    // Chart: OKX candles → Kraken OHLC → session fallback
-    try {
-      let chartPrices = null, chartLabels = null;
-
-      // Try OKX candles first (1H interval, last 24 candles)
-      try {
-        const j = await xFetch(PROXY + '/candles.json');
-        if (j.data && j.data.length > 2) {
-          const candles = j.data.reverse(); // OKX returns newest first
-          chartPrices = candles.map(c => parseFloat(c[4]));
-          chartLabels = candles.map(c => {
-            const d = new Date(parseInt(c[0]));
-            return d.toLocaleTimeString('nb-NO', {hour:'2-digit', minute:'2-digit'});
-          });
-        }
-      } catch(e) {}
-
-      // Fallback: Kraken OHLC
-      if (!chartPrices) {
-        const j = await xFetch('https://api.kraken.com/0/public/OHLC?pair=XRPUSD&interval=30');
-        const candles = j.result && j.result['XXRPZUSD'];
-        if (candles && candles.length > 2) {
-          const recent = candles.slice(-48);
-          chartPrices = recent.map(c => parseFloat(c[4]));
-          chartLabels = recent.map(c => {
-            const d = new Date(c[0] * 1000);
-            return d.toLocaleTimeString('nb-NO', {hour:'2-digit', minute:'2-digit'});
-          });
-        }
-      }
-
-      if (chartPrices) {
-        renderXRPChart(chartLabels, chartPrices);
-      } else throw new Error('no chart data');
-
-    } catch(ce) {
-      const sess = xrpHistory();
-      if (sess.length >= 2) {
-        renderXRPChart(
-          sess.map(h => new Date(h.t).toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'})),
-          sess.map(h => h.v)
-        );
-      }
-    }
-
-    setStatus('xrp', true);
-  } catch(e) {
-    console.error('XRP error', e);
-    el('xrp-price').textContent = '$—';
-    setStatus('xrp', false);
-  }
-}
-
-// ── Weather (Open-Meteo — no API key needed) ──────────────────────────────────
-const WX_CODES = {
-  0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️',
-  45:'🌫️', 48:'🌫️',
-  51:'🌦️', 53:'🌦️', 55:'🌦️',
-  61:'🌧️', 63:'🌧️', 65:'🌧️',
-  71:'❄️', 73:'❄️', 75:'❄️',
-  77:'🌨️', 80:'🌧️', 81:'🌧️', 82:'⛈️',
-  85:'🌨️', 86:'🌨️', 95:'⛈️', 96:'⛈️', 99:'⛈️'
-};
-const WX_DESCS = {
-  0:'Clear sky', 1:'Mainly clear', 2:'Partly cloudy', 3:'Overcast',
-  45:'Fog', 48:'Icy fog', 51:'Light drizzle', 53:'Drizzle', 55:'Dense drizzle',
-  61:'Light rain', 63:'Rain', 65:'Heavy rain',
-  71:'Light snow', 73:'Snow', 75:'Heavy snow', 77:'Snow grains',
-  80:'Rain showers', 81:'Rain showers', 82:'Violent showers',
-  85:'Snow showers', 86:'Heavy snow showers',
-  95:'Thunderstorm', 96:'Thunderstorm w/ hail', 99:'Thunderstorm w/ heavy hail'
-};
-
-async function loadWeather() {
-  try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=59.9139&longitude=10.7522&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,visibility,uv_index,weather_code&hourly=temperature_2m,weather_code&timezone=Europe/Oslo&forecast_days=1&wind_speed_unit=ms';
-    const r = await fetch(url);
-    const d = await r.json();
-    const c = d.current;
-
-    el('wx-temp').textContent   = Math.round(c.temperature_2m);
-    el('wx-feels').textContent  = Math.round(c.apparent_temperature) + '°C';
-    el('wx-wind').textContent   = Math.round(c.wind_speed_10m) + ' m/s';
-    el('wx-humid').textContent  = c.relative_humidity_2m + '%';
-    el('wx-pres').textContent   = Math.round(c.surface_pressure) + ' hPa';
-    // visibility not shown in new layout
-    el('wx-uv').textContent     = c.uv_index ?? '—';
-    el('wx-icon').textContent   = WX_CODES[c.weather_code] || '🌡️';
-    initWxParticles(c.weather_code);
-    el('wx-desc').textContent   = WX_DESCS[c.weather_code] || 'Unknown';
-
-    // Hourly forecast — next 6 hours in the new bar
-    const times  = d.hourly.time;
-    const temps  = d.hourly.temperature_2m;
-    const codes  = d.hourly.weather_code;
-    const nowH   = new Date(c.time).getHours();
-    const fc     = el('wx-forecast-bar');
-    fc.innerHTML = '';
-
-    let count = 0;
-    for (let i = 0; i < times.length && count < 6; i++) {
-      const h = new Date(times[i]).getHours();
-      if (h < nowH) continue;
-      const div = document.createElement('div');
-      div.className = 'fx-item';
-      div.innerHTML =
-        '<div class="fx-time">' + String(h).padStart(2,'0') + ':00</div>' +
-        '<div class="fx-icon">' + (WX_CODES[codes[i]] || '—') + '</div>' +
-        '<div class="fx-temp">' + Math.round(temps[i]) + '°</div>';
-      fc.appendChild(div);
-      count++;
-    }
-
-    setStatus('wx', true);
-  } catch(e) {
-    console.error('Weather error', e);
-    el('wx-desc').textContent = 'Could not load weather';
-    setStatus('wx', false);
-  }
-}
-
-// ── NRK RSS ───────────────────────────────────────────────────────────────────
-function renderNews(items) {
-  const list = el('news-list');
-  list.innerHTML = '';
-  items.slice(0, 9).forEach(item => {
-    const title   = item.title || '';
-    const link    = item.link  || item.url || '#';
-    const pubDate = item.pubDate || item.published || '';
-    const cat     = (item.categories && item.categories[0]) || item.category || 'Nyheter';
-    const dt      = pubDate ? new Date(pubDate).toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'}) : '';
-    const div = document.createElement('div');
-    div.className = 'news-item';
-    div.innerHTML =
-      '<div class="news-category">' + cat + '</div>' +
-      '<div class="news-headline">' + title + '</div>' +
-      '<div class="news-time">' + dt + '</div>';
-    div.onclick = () => window.open(link, '_blank');
-    list.appendChild(div);
-  });
-}
-
-async function fetchViaProxy(proxyUrl, feedUrl) {
-  const r = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-  const text = await r.text();
-  // Try JSON first (rss2json style)
-  try {
-    const j = JSON.parse(text);
-    if (j.items && j.items.length) return j.items;
-    if (j.status === 'ok' && j.items) return j.items;
-  } catch(e) {}
-  // Parse XML
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(text, 'text/xml');
-  const nodes = Array.from(xml.querySelectorAll('item'));
-  if (!nodes.length) throw new Error('No items in feed');
-  return nodes.map(n => ({
-    title:    n.querySelector('title')?.textContent || '',
-    link:     n.querySelector('link')?.textContent || '#',
-    pubDate:  n.querySelector('pubDate')?.textContent || '',
-    categories: [n.querySelector('category')?.textContent || 'Nyheter']
-  }));
-}
-
-async function loadNews() {
-  const FEED = 'https://www.nrk.no/toppsaker.rss';
-  const proxies = [
-    'https://api.rss2json.com/v1/api.json?rss_url=',
-    'https://api.allorigins.win/raw?url=',
-    'https://corsproxy.io/?'
-  ];
-
-  for (const proxy of proxies) {
-    try {
-      const items = await fetchViaProxy(proxy, FEED);
-      renderNews(items);
-      setStatus('news', true);
-      return;
-    } catch(e) {
-      console.warn('Proxy failed:', proxy, e.message);
-    }
-  }
-
-  // All proxies failed
-  console.error('All NRK proxies failed');
-  el('news-list').innerHTML = '<div class="news-loading" style="color:var(--red)">Kunne ikke hente nyheter</div>';
-  setStatus('news', false);
-}
-
-// ── Footer timestamp ──────────────────────────────────────────────────────────
-function updateFooter() {
-  el('footer-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString('nb-NO');
-}
-
-// ── Init + refresh ─────────────────────────────────────────────────────────────
-// ── Quotes ───────────────────────────────────────────────────────────────────
-const QUOTES = [
-  "The best time to buy XRP was yesterday. The second best time is now.",
-  "Per aspera ad astra.",
-  "Make it work, make it right, make it fast.",
-  "The universe is under no obligation to make sense to you.",
-  "In the middle of difficulty lies opportunity.",
-  "Fortune favours the bold.",
-  "The stars don't ask permission to shine.",
-  "Every rocket looked impossible until it flew.",
-  "Volatility is the price of admission.",
-  "Clear skies are earned, not given.",
-  "To the moon is a direction, not just a destination.",
-  "Good things take time. Great things take patience.",
-];
-function rotateQuote() {
-  const q = el('footer-quote');
-  if (!q) return;
-  const idx = Math.floor(Date.now() / 60000) % QUOTES.length;
-  q.textContent = '"' + QUOTES[idx] + '"';
-}
-rotateQuote();
-setInterval(rotateQuote, 60000);
-
-// ── BTC Dominance for strip ───────────────────────────────────────────────────
-async function loadStripData() {
-  try {
-    // Use OKX for BTC and total — same permissive CORS
-    // CoinLore BTC id=90
-    let btcPrice = null;
-    try {
-      const jc = await fetch('https://api.coinlore.net/api/ticker/?id=90');
-      const ac = await jc.json();
-      btcPrice = parseFloat(ac[0].price_usd);
-    } catch(e) {
-      const j = await xFetch(PROXY + '/btc.json');
-      btcPrice = parseFloat(j.data[0].last);
-    }
-
-    // CoinLore global stats has BTC dominance directly
-    let dom = null;
-    try {
-      const gs = await fetch('https://api.coinlore.net/api/global/');
-      const ga = await gs.json();
-      // CoinLore returns array with btc_d as BTC dominance %
-      dom = parseFloat(ga[0].btc_d);
-    } catch(e) {
-      // fallback: compute from btcPrice
-      const btcMcap = btcPrice * 19700000;
-      dom = (btcMcap / 3200000000000) * 100;
-    }
-
-    const domEl = el('strip-btcd');
-    const barEl = el('strip-btcd-bar');
-    if (domEl) domEl.textContent = fmt(dom, 1) + '%';
-    if (barEl) barEl.style.width = Math.min(dom, 100) + '%';
-
-    // Altseason signal: BTC.D < 52% = alt season likely
-    const altEl = el('strip-alt');
-    if (altEl) {
-      if (dom < 50) {
-        altEl.textContent = 'HOT';
-        altEl.style.color = 'var(--green)';
-      } else if (dom < 54) {
-        altEl.textContent = 'WARM';
-        altEl.style.color = 'var(--gold)';
-      } else {
-        altEl.textContent = 'COOL';
-        altEl.style.color = 'var(--muted)';
-      }
-    }
-  } catch(e) {
-    console.warn('Strip data failed', e.message);
-  }
-}
-
-// ── Portfolio value (called after XRP price loaded) ───────────────────────────
-function updatePortfolio(price) {
-  const val = price * 7800;
-  const fmt2 = n => '$' + n.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
-  const pe = el('xrp-portfolio-val');
-  const se = el('strip-portfolio');
-  if (pe) pe.textContent = fmt2(val) + ' · 7,800 XRP';
-  if (se) se.textContent = fmt2(val);
-}
-
-// ── XRP particle field ────────────────────────────────────────────────────────
-(function initXRPParticles() {
-  const canvas = document.getElementById('xrp-particles');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const particles = [];
-  const COUNT = 55;
-
-  function resize() {
-    const wrap = canvas.parentElement;
-    canvas.width  = wrap.offsetWidth;
-    canvas.height = wrap.offsetHeight;
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0'; canvas.style.left = '0';
-    canvas.style.width = '100%'; canvas.style.height = '100%';
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  for (let i = 0; i < COUNT; i++) {
-    // mix: ~70% fine dust, ~25% mid, ~5% larger glints
-    const roll = Math.random();
-    const r = roll < 0.70 ? 0.3 + Math.random() * 0.5
-             : roll < 0.95 ? 0.9 + Math.random() * 0.7
-             :                1.6 + Math.random() * 0.8;
-    const a = r < 0.8 ? 0.04 + Math.random() * 0.10
-             : r < 1.4 ? 0.07 + Math.random() * 0.12
-             :            0.10 + Math.random() * 0.14;
-    particles.push({
-      x: Math.random(),
-      y: Math.random(),
-      r,
-      dx: (Math.random() - 0.5) * 0.00035,
-      dy: (Math.random() - 0.5) * 0.00035,
-      a
     });
   }
 
-  function drawParticles() {
-    canvas.width = canvas.width; // clear
-    const W = canvas.width, H = canvas.height;
-    ctx.clearRect(0, 0, W, H);
-    for (const p of particles) {
-      p.x += p.dx; p.y += p.dy;
-      if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
-      if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(80,140,255,' + p.a + ')';
-      ctx.fill();
-    }
-    requestAnimationFrame(drawParticles);
-  }
-  drawParticles();
-})();
-
-// ── Weather particles ─────────────────────────────────────────────────────────
-let wxParticleCode = 0;
-function initWxParticles(code) {
-  wxParticleCode = code;
-  const canvas = document.getElementById('wx-particles');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width  = canvas.parentElement.offsetWidth;
-  canvas.height = canvas.parentElement.offsetHeight;
-
-  const particles = [];
-  const isRain = [51,53,55,61,63,65,80,81,82,95,96,99].includes(code);
-  const isSnow = [71,73,75,77,85,86].includes(code);
-  const isClear = [0,1].includes(code);
-
-  if (!isRain && !isSnow && !isClear) return; // no particles for other conditions
-
-  const COUNT = isRain ? 80 : isSnow ? 50 : 30;
-  for (let i = 0; i < COUNT; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      len: isRain ? 8 + Math.random() * 10 : 0,
-      r:   isSnow ? 1.5 + Math.random() * 2 : isClear ? 1 + Math.random() * 1.5 : 0,
-      speed: isRain ? 2.5 + Math.random() * 2 : isSnow ? 0.4 + Math.random() * 0.6 : 0.1 + Math.random() * 0.2,
-      drift: (Math.random() - 0.5) * 0.5,
-      a: 0.08 + Math.random() * 0.12
-    });
-  }
-
-  function drawWx() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const p of particles) {
-      if (isRain) {
-        p.y += p.speed; p.x += p.drift * 0.5;
-        if (p.y > canvas.height) { p.y = -p.len; p.x = Math.random() * canvas.width; }
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x + p.drift, p.y + p.len);
-        ctx.strokeStyle = 'rgba(150,200,255,' + p.a + ')';
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-      } else if (isSnow) {
-        p.y += p.speed; p.x += Math.sin(p.y * 0.02) * 0.4;
-        if (p.y > canvas.height) { p.y = -5; p.x = Math.random() * canvas.width; }
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(220,235,255,' + (p.a * 1.2) + ')';
-        ctx.fill();
-      } else if (isClear) {
-        // subtle drifting sparkles for clear sky
-        p.y -= p.speed * 0.3;
-        if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,230,120,' + p.a + ')';
-        ctx.fill();
-      }
-    }
-    requestAnimationFrame(drawWx);
-  }
-  drawWx();
-}
-
-// ── Sunrise / Sunset (Open-Meteo daily) ───────────────────────────────────────
-async function loadSunTimes() {
-  try {
-    const j = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.9139&longitude=10.7522&daily=sunrise,sunset&timezone=Europe/Oslo&forecast_days=1');
-    const d = await j.json();
-    const rise = d.daily.sunrise[0]; // "2026-06-04T04:12"
-    const set  = d.daily.sunset[0];
-    const fmt  = s => s.split('T')[1];
-    const re = el('wx-sunrise'); const se = el('wx-sunset');
-    if (re) re.textContent = fmt(rise);
-    if (se) se.textContent = fmt(set);
-  } catch(e) { console.warn('Sun times failed', e); }
-}
-
-async function refreshAll() {
-  await Promise.allSettled([
-    loadXRP(),
-    loadWeather(),
-    loadStripData()
-  ]);
-  updateFooter();
-}
-
-async function refreshNews() {
-  await loadNews();
-  updateFooter();
-}
-
-refreshAll();
-refreshNews();
-setInterval(refreshAll, 5 * 60 * 1000);  // crypto + weather every 5 min
-setInterval(refreshNews, 5 * 60 * 1000); // news every 5 min (own timer)
-</script>
-
-<script>
-// ── WebGL Sphere ─────────────────────────────────────────────────────────────
-(function() {
-  const canvas = document.getElementById('sphere-canvas');
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  if (!gl) return;
-
-  function resize() {
-    const wrap = document.getElementById('sphere-wrap');
-    const W = wrap.clientWidth;
-    const H = wrap.clientHeight;
-    canvas.width  = W * devicePixelRatio;
-    canvas.height = H * devicePixelRatio;
-    canvas.style.width  = W + 'px';
-    canvas.style.height = H + 'px';
-    gl.viewport(0, 0, canvas.width, canvas.height);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // ── Shaders ────────────────────────────────────────────────────────────────
-  const VS = `
-    attribute vec3 aPos;
-    attribute vec3 aNorm;
-    uniform mat4 uMVP;
-    uniform mat4 uModel;
-    varying vec3 vNorm;
-    varying vec3 vPos;
-    void main(){
-      vNorm = mat3(uModel) * aNorm;
-      vPos  = (uModel * vec4(aPos, 1.0)).xyz;
-      gl_Position = uMVP * vec4(aPos, 1.0);
-    }
-  `;
-
-  const FS = `
-    precision highp float;
-    varying vec3 vNorm;
-    varying vec3 vPos;
-    uniform vec3 uLightDir;   // main rim light (space blue, behind)
-    uniform vec3 uFillDir;    // soft fill
-    uniform float uTime;
-
-    void main(){
-      vec3 N = normalize(vNorm);
-      vec3 L = normalize(uLightDir);
-      vec3 F = normalize(uFillDir);
-
-      // Base sphere colour: very dark navy
-      vec3 base = vec3(0.015, 0.025, 0.06);
-
-      // Rim light — electric space blue, from behind
-      float rim  = max(0.0, dot(N, L));
-      float rim2 = pow(rim, 3.5);
-      vec3 rimCol = vec3(0.12, 0.45, 1.0) * rim2 * 2.8;
-
-      // Fresnel edge glow
-      vec3 view = normalize(vec3(0.0, 0.0, 1.0));
-      float fresnel = pow(1.0 - max(dot(N, view), 0.0), 3.5);
-      vec3 fresnelCol = vec3(0.15, 0.5, 1.0) * fresnel * 1.6;
-
-      // Subtle fill from above-right (warm-neutral)
-      float fill = max(0.0, dot(N, F)) * 0.18;
-      vec3 fillCol = vec3(0.7, 0.75, 0.9) * fill;
-
-      // Subtle slow-spinning noise shimmer (faked with sin)
-      float shimmer = sin(vPos.y * 4.0 + uTime * 0.4) * 0.02 + 0.02;
-
-      vec3 col = base + rimCol + fresnelCol + fillCol + shimmer;
-
-      // Atmospheric transparency at edges (alpha)
-      float alpha = 0.72 + fresnel * 0.25;
-
-      gl_FragColor = vec4(col, alpha);
-    }
-  `;
-
-  function mkShader(type, src) {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    return s;
-  }
-
-  const prog = gl.createProgram();
-  gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
-  gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
-  gl.linkProgram(prog);
-  gl.useProgram(prog);
-
-  // ── Sphere geometry ────────────────────────────────────────────────────────
-  const SLICES = 64, STACKS = 64;
-  const pos = [], norm = [], idx = [];
-
-  for (let j = 0; j <= STACKS; j++) {
-    const phi = Math.PI * j / STACKS;
-    for (let i = 0; i <= SLICES; i++) {
-      const theta = 2 * Math.PI * i / SLICES;
-      const x = Math.sin(phi) * Math.cos(theta);
-      const y = Math.cos(phi);
-      const z = Math.sin(phi) * Math.sin(theta);
-      pos.push(x, y, z);
-      norm.push(x, y, z);
-    }
-  }
-  for (let j = 0; j < STACKS; j++) {
-    for (let i = 0; i < SLICES; i++) {
-      const a = j * (SLICES + 1) + i;
-      const b = a + SLICES + 1;
-      idx.push(a, b, a + 1, b, b + 1, a + 1);
-    }
-  }
-
-  function mkBuf(target, data, ctor) {
-    const b = gl.createBuffer();
-    gl.bindBuffer(target, b);
-    gl.bufferData(target, new ctor(data), gl.STATIC_DRAW);
-    return b;
-  }
-
-  const posBuf  = mkBuf(gl.ARRAY_BUFFER, pos,  Float32Array);
-  const normBuf = mkBuf(gl.ARRAY_BUFFER, norm, Float32Array);
-  const idxBuf  = mkBuf(gl.ELEMENT_ARRAY_BUFFER, idx, Uint16Array);
-
-  const aPos  = gl.getAttribLocation(prog, 'aPos');
-  const aNorm = gl.getAttribLocation(prog, 'aNorm');
-  const uMVP   = gl.getUniformLocation(prog, 'uMVP');
-  const uModel = gl.getUniformLocation(prog, 'uModel');
-  const uLight = gl.getUniformLocation(prog, 'uLightDir');
-  const uFill  = gl.getUniformLocation(prog, 'uFillDir');
-  const uTime  = gl.getUniformLocation(prog, 'uTime');
-
-  // ── Matrix helpers (column-major) ─────────────────────────────────────────
-  function identity() {
-    return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
-  }
-  function perspective(fov, aspect, near, far) {
-    const f = 1 / Math.tan(fov / 2);
-    const m = new Float32Array(16);
-    m[0]=f/aspect; m[5]=f;
-    m[10]=(far+near)/(near-far); m[11]=-1;
-    m[14]=(2*far*near)/(near-far);
-    return m;
-  }
-  function translate(m, x, y, z) {
-    const r = new Float32Array(m);
-    r[12]=m[0]*x+m[4]*y+m[8]*z+m[12];
-    r[13]=m[1]*x+m[5]*y+m[9]*z+m[13];
-    r[14]=m[2]*x+m[6]*y+m[10]*z+m[14];
-    return r;
-  }
-  function rotY(m, a) {
-    const c=Math.cos(a), s=Math.sin(a);
-    const r = new Float32Array(m);
-    r[0]=m[0]*c+m[8]*s;   r[2]=-m[0]*s+m[8]*c;
-    r[4]=m[4]*c+m[12]*s;  r[6]=-m[4]*s+m[12]*c;
-    r[8]=m[8]*c+m[0]*s;   r[10]=-m[8]*s+m[0]*c; // fixed
-    // proper rotation
-    const m0=m[0],m4=m[4],m8=m[8];
-    const m1=m[1],m5=m[5],m9=m[9];
-    const m2=m[2],m6=m[6],m10=m[10];
-    r[0]=m0*c+m8*s;  r[8]=-m0*s+m8*c;
-    r[1]=m1*c+m9*s;  r[9]=-m1*s+m9*c;
-    r[2]=m2*c+m10*s; r[10]=-m2*s+m10*c;
-    return r;
-  }
-  function mul(a, b) {
-    const r = new Float32Array(16);
-    for (let i=0;i<4;i++) for(let j=0;j<4;j++)
-      for(let k=0;k<4;k++) r[i*4+j]+=a[i*4+k]*b[k*4+j];
-    return r;
-  }
-
-  // ── Render loop ────────────────────────────────────────────────────────────
-  gl.enable(gl.DEPTH_TEST);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-  let angle = 0;
-  const start = performance.now();
-
-  function draw(ts) {
-    resize();
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    const t  = (ts - start) / 1000;
-    angle += 0.0015;
-
-    const W = canvas.width, H = canvas.height;
-    const proj  = perspective(0.7, W/H, 0.1, 100);
-    const view  = translate(identity(), 0, 0, -2.8);
-    const model = rotY(identity(), angle);
-    const mvp   = mul(proj, mul(view, model));
-
-    gl.uniformMatrix4fv(uMVP,   false, mvp);
-    gl.uniformMatrix4fv(uModel, false, model);
-
-    // rim light from behind-left in world space
-    gl.uniform3f(uLight, -0.6, 0.2, -1.0);
-    // fill from above-right front
-    gl.uniform3f(uFill,  0.5, 0.8, 0.5);
-    gl.uniform1f(uTime, t);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, normBuf);
-    gl.enableVertexAttribArray(aNorm);
-    gl.vertexAttribPointer(aNorm, 3, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
-    gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0);
-
-    requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
-})();
-</script>
-
-</body>
-</html>
+  // 3. Tizen-Compliant Open-Meteo Processing Engine
+  function grabWeatherMetrics() {
+    var xhrObj = new XMLHttpRequest();
+    var targetCoordinatesUrl = "https://open-meteo.com"; // Set to Oslo/Bærum coordinates
+    
+    xhrObj.open("GET", targetCoordinatesUrl, true);
+    xhrObj.onreadystatechange = function () {
+      if (xhrObj.readyState === 4 && jsonObjIsValid(xhrObj.status)) {
+        try {
+          var structuralPayload = JSON.parse(xhrObj.responseText);
+          var activeConditions = structuralPayload.current_weather;
+          document.getElementById("weather-temp").innerHTML = activeConditions.temperature + "°C";
+          document.getElementById("weather-desc").innerHTML = "Wind Velocity: " + activeConditions.windspeed + " km/h";
