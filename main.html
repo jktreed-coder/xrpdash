@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111113;
+    --surface2: #18181b;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0ede8;
+    --muted: #7a7872;
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.12);
+    --green: #4caf85;
+    --red: #e05c5c;
+    --blue: #5b9bd5;
+    --font-serif: 'DM Serif Display', serif;
+    --font-sans: 'Outfit', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    line-height: 1.5;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.9rem 2rem;
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .header-left { display: flex; align-items: baseline; gap: 1.5rem; }
+
+  .wordmark {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    color: var(--gold);
+    letter-spacing: -0.01em;
+  }
+
+  .header-time {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .header-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  #panel-xrp { grid-column: 1 / -1; grid-row: 1; }
+  #panel-weather { grid-column: 1; grid-row: 2; }
+  #panel-news { grid-column: 2; grid-row: 2; }
+
+  .panel {
+    background: var(--bg);
+    padding: 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .panel-label::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .dot-live { background: var(--green) !important; animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+
+
+  /* ── XRP Panel ── */
+  .xrp-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .xrp-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .xrp-price {
+    font-family: var(--font-serif);
+    font-size: 3.2rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .badge-green { background: rgba(76,175,133,0.15); color: var(--green); }
+  .badge-red   { background: rgba(224,92,92,0.15);  color: var(--red); }
+
+  .xrp-meta {
+    display: flex;
+    gap: 2rem;
+    align-items: baseline;
+  }
+
+  .xrp-meta-item { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+  .xrp-meta-val  { color: var(--text); font-weight: 500; margin-left: 0.3rem; }
+
+  #panel-xrp {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* blue glow orb behind the chart */
+  #panel-xrp::before {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(30,80,200,0.45) 0%, rgba(10,30,120,0.2) 45%, transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+    animation: glowBreathe 9s ease-in-out infinite;
+  }
+
+  .xrp-header, .xrp-price-row { position: relative; z-index: 1; }
+
+  .xrp-chart-wrap {
+    flex: 1;
+    position: relative;
+    min-height: 0;
+    margin: 0.5rem -0.25rem 0;
+    z-index: 1;
+  }
+
+  .xrp-chart-wrap canvas { width: 100% !important; height: 100% !important; }
+
+  /* ── Weather Sphere ── */
+  #panel-weather {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #sphere-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #sphere-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* halo glow behind sphere */
+  #sphere-halo {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(30,80,180,0.55) 0%, rgba(10,30,100,0.3) 40%, transparent 70%);
+    filter: blur(38px);
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: haloBreathe 13s ease-in-out infinite;
+  }
+
+  /* floating text overlay inside sphere */
+  #wx-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  #wx-overlay .wx-icon-big {
+    font-size: 2.8rem;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+    filter: drop-shadow(0 0 12px rgba(80,160,255,0.7));
+  }
+
+  #wx-overlay .wx-temp-big {
+    font-family: var(--font-serif);
+    font-size: 3.8rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(100,180,255,0.6), 0 2px 8px rgba(0,0,0,0.8);
+  }
+
+  #wx-overlay .wx-desc-big {
+    font-size: 0.78rem;
+    color: rgba(200,220,255,0.75);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+  }
+
+  #wx-overlay .wx-loc {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: rgba(150,180,255,0.45);
+    letter-spacing: 0.1em;
+    margin-top: 0.5rem;
+  }
+
+  /* stats row below sphere */
+  #wx-stats-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(to top, rgba(10,10,11,0.95) 60%, transparent);
+    z-index: 10;
+  }
+
+  .wx-stat-item { text-align: center; }
+  .wx-stat-label { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(150,180,255,0.5); margin-bottom: 0.2rem; }
+  .wx-stat-val { font-size: 0.88rem; font-weight: 500; color: rgba(210,230,255,0.9); }
+
+  /* forecast strip at very bottom */
+  #wx-forecast-bar {
+    position: absolute;
+    bottom: 62px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0 1.5rem;
+    z-index: 10;
+  }
+
+  .fx-item {
+    text-align: center;
+    min-width: 44px;
+  }
+  .fx-time { font-family: var(--font-mono); font-size: 0.55rem; color: rgba(150,180,255,0.4); margin-bottom: 0.15rem; }
+  .fx-icon { font-size: 0.9rem; }
+  .fx-temp { font-size: 0.72rem; color: rgba(210,230,255,0.7); font-weight: 500; }
+
+  /* panel label stays top-left */
+  #panel-weather .panel-label {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.75rem;
+    z-index: 20;
+    margin-bottom: 0;
+  }
+
+  /* ── NRK News ── */
+  #panel-news {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* blue glow orb — mirrors the sphere halo */
+  #panel-news::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(30,80,180,0.38) 0%, rgba(10,30,100,0.18) 40%, transparent 70%);
+    filter: blur(38px);
+    pointer-events: none;
+    z-index: 0;
+    animation: glowBreatheCenter 11s ease-in-out infinite;
+  }
+
+  #panel-news .panel-label,
+  .news-list { position: relative; z-index: 1; }
+
+  .news-list { display: flex; flex-direction: column; gap: 0; overflow: hidden; flex: 1; }
+
+  .news-item {
+    padding: 0.55rem 0;
+    border-bottom: 0.5px solid rgba(60,100,200,0.18);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .news-item:first-child { padding-top: 0; }
+  .news-item:last-child { border-bottom: none; }
+
+  .news-item:hover .news-headline { color: var(--gold); }
+
+  .news-category {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(150,180,255,0.55);
+    margin-bottom: 0.3rem;
+  }
+
+  .news-headline {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--text);
+    transition: color 0.15s;
+  }
+
+  .news-time {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: rgba(150,180,255,0.38);
+    margin-top: 0.3rem;
+  }
+
+  .news-loading {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  /* ── Footer status bar ── */
+  footer {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-top: 0.5px solid var(--border);
+    padding: 0.4rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  .status-indicators { display: flex; gap: 1.5rem; }
+  .status-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+    background: var(--muted);
+  }
+  .status-dot.ok { background: var(--green); }
+  .status-dot.err { background: var(--red); }
+
+  /* misc */
+  .val-green { color: var(--green); }
+  .val-red   { color: var(--red); }
+  .val-gold  { color: var(--gold); }
+
+  .shimmer {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    height: 1em;
+    display: inline-block;
+    width: 80px;
+  }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+  @keyframes glowBreathe {
+    0%, 100% { opacity: 0.85; transform: translateX(-50%) scale(1); }
+    50%       { opacity: 1.0;  transform: translateX(-50%) scale(1.08); }
+  }
+
+  @keyframes glowBreatheCenter {
+    0%, 100% { opacity: 0.75; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 1.0;  transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  @keyframes haloBreathe {
+    0%, 100% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 1.0;  transform: translate(-50%, -50%) scale(1.07); }
+  }
+
+  @media (max-width: 900px) {
+    html, body { height: auto; overflow: auto; }
+    main { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
+    #panel-xrp { grid-column: 1 / -1; min-height: 280px; }
+    #panel-xrp    { grid-row: 1; }
+    #panel-weather { grid-row: 3; }
+    #panel-news   { grid-row: 4; }
+    header { padding: 1rem 1.25rem; }
+    .panel { padding: 1.25rem; }
+    footer { padding: 0.5rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="wordmark">SIGNAL</div>
+    <div class="header-date" id="hdr-date">—</div>
+  </div>
+  <div class="header-time" id="hdr-time">—</div>
+</header>
+
+<main>
+
+  <!-- ── XRP Chart ── -->
+  <div class="panel" id="panel-xrp">
+    <div class="xrp-header">
+      <div class="panel-label" style="margin-bottom:0;"><span class="dot-live" style="width:4px;height:4px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;"></span> XRP / USD · Live</div>
+      <div class="xrp-meta" id="xrp-meta-row">
+        <span class="xrp-meta-item">MCap <span class="xrp-meta-val" id="xrp-mcap">—</span></span>
+        <span class="xrp-meta-item">Vol 24h <span class="xrp-meta-val" id="xrp-vol">—</span></span>
+        <span class="xrp-meta-item">High 24h <span class="xrp-meta-val val-green" id="xrp-high">—</span></span>
+        <span class="xrp-meta-item">Low 24h <span class="xrp-meta-val val-red" id="xrp-low">—</span></span>
+      </div>
+    </div>
+    <div class="xrp-price-row" style="margin-bottom:0.25rem;">
+      <div class="xrp-price" id="xrp-price">$—</div>
+      <span class="badge" id="xrp-badge">—</span>
+    </div>
+    <div class="xrp-chart-wrap">
+      <canvas id="xrp-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- ── Weather Sphere ── -->
+  <div class="panel" id="panel-weather">
+    <div class="panel-label"><span style="width:4px;height:4px;border-radius:50%;background:var(--blue);display:inline-block;"></span> Weather · Oslo</div>
+
+    <!-- glow halo behind sphere -->
+    <div id="sphere-halo"></div>
+
+    <!-- WebGL canvas -->
+    <div id="sphere-wrap">
+      <canvas id="sphere-canvas"></canvas>
+    </div>
+
+    <!-- floating text inside sphere -->
+    <div id="wx-overlay">
+      <div class="wx-icon-big" id="wx-icon">—</div>
+      <div class="wx-temp-big"><span id="wx-temp">—</span>°C</div>
+      <div class="wx-desc-big" id="wx-desc">Loading…</div>
+      <div class="wx-loc">Oslo · 59.91° N</div>
+    </div>
+
+    <!-- hourly forecast strip -->
+    <div id="wx-forecast-bar" id="wx-forecast"></div>
+
+    <!-- stats bar -->
+    <div id="wx-stats-bar">
+      <div class="wx-stat-item">
+        <div class="wx-stat-label">Feels like</div>
+        <div class="wx-stat-val" id="wx-feels">—</div>
+      </div>
+      <div class="wx-stat-item">
+        <div class="wx-stat-label">Wind</div>
+        <div class="wx-stat-val" id="wx-wind">—</div>
+      </div>
+      <div class="wx-stat-item">
+        <div class="wx-stat-label">Humidity</div>
+        <div class="wx-stat-val" id="wx-humid">—</div>
+      </div>
+      <div class="wx-stat-item">
+        <div class="wx-stat-label">Pressure</div>
+        <div class="wx-stat-val" id="wx-pres">—</div>
+      </div>
+      <div class="wx-stat-item">
+        <div class="wx-stat-label">UV</div>
+        <div class="wx-stat-val" id="wx-uv">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NRK News ── -->
+  <div class="panel" id="panel-news">
+    <div class="panel-label"><span style="width:4px;height:4px;border-radius:50%;background:var(--red);display:inline-block;"></span> NRK Nyheter</div>
+    <div class="news-list" id="news-list">
+      <div class="news-loading">Henter nyheter…</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="status-indicators">
+    <span><span class="status-dot" id="st-xrp"></span>XRP</span>
+    <span><span class="status-dot" id="st-wx"></span>Weather</span>
+    <span><span class="status-dot" id="st-news"></span>NRK</span>
+  </div>
+  <span id="footer-updated">Last updated: —</span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
+function fmt(n, dec=2) { return Number(n).toFixed(dec); }
+function fmtM(n) {
+  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+  return '$' + n.toLocaleString();
+}
+function setStatus(id, ok) {
+  el('st-'+id).className = 'status-dot ' + (ok ? 'ok' : 'err');
+}
+
+// ── Clock ─────────────────────────────────────────────────────────────────────
+function tick() {
+  const now = new Date();
+  el('hdr-time').textContent = now.toLocaleTimeString('nb-NO', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  el('hdr-date').textContent = now.toLocaleDateString('nb-NO', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+}
+tick();
+setInterval(tick, 1000);
+
+// ── XRP Chart ────────────────────────────────────────────────────────────────
+let xrpChart = null;
+const XRP_HISTORY_KEY = 'xrp_price_history';
+
+function xrpHistory() {
+  try { return JSON.parse(sessionStorage.getItem(XRP_HISTORY_KEY) || '[]'); } catch { return []; }
+}
+function xrpSave(entry) {
+  const h = xrpHistory();
+  h.push(entry);
+  if (h.length > 288) h.shift(); // max 24h at 5min intervals
+  sessionStorage.setItem(XRP_HISTORY_KEY, JSON.stringify(h));
+}
+
+function renderXRPChart(labels, data) {
+  const canvas = el('xrp-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (xrpChart) xrpChart.destroy();
+
+  const isUp = data.length < 2 || data[data.length-1] >= data[0];
+  const lineColor = '#4a90d9';          // always space blue
+  const fillColor = 'rgba(40,100,220,'; // blue fill regardless of direction
+  void isUp; // kept for possible future use
+
+  xrpChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: lineColor,
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: true,
+        backgroundColor: (ctx2) => {
+          const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, ctx2.chart.height);
+          g.addColorStop(0, fillColor + '0.2)');
+          g.addColorStop(1, fillColor + '0)');
+          return g;
+        },
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index', intersect: false,
+          backgroundColor: '#18181b',
+          titleColor: '#7a7872',
+          bodyColor: '#f0ede8',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          callbacks: { label: c => ' $' + Number(c.raw).toFixed(4) }
+        }
+      },
+      scales: {
+        x: {
+          display: true,
+          grid: { color: 'rgba(255,255,255,0.03)' },
+          ticks: {
+            color: '#7a7872',
+            font: { family: "'DM Mono', monospace", size: 9 },
+            maxTicksLimit: 8,
+            maxRotation: 0
+          }
+        },
+        y: {
+          display: true,
+          position: 'right',
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: {
+            color: '#7a7872',
+            font: { family: "'DM Mono', monospace", size: 9 },
+            callback: v => '$' + Number(v).toFixed(3)
+          }
+        }
+      }
+    }
+  });
+}
+
+// Try a list of endpoints in order, return first that succeeds
+async function tryFetch(sources) {
+  for (const { url, parse } of sources) {
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(6000) });
+      if (!r.ok) continue;
+      const j = await r.json();
+      const result = parse(j);
+      if (result && result.price) return result;
+    } catch(e) { console.warn('fetch failed:', url, e.message); }
+  }
+  return null;
+}
+
+async function loadXRP() {
+  try {
+    // Source cascade — Kraken → Binance → Huobi (all no-key, good CORS)
+    const data = await tryFetch([
+      {
+        url: 'https://api.kraken.com/0/public/Ticker?pair=XRPUSD',
+        parse: j => {
+          const t = j.result && j.result['XXRPZUSD'];
+          if (!t) return null;
+          const price  = parseFloat(t.c[0]);
+          const high   = parseFloat(t.h[1]);
+          const low    = parseFloat(t.l[1]);
+          const vol    = parseFloat(t.v[1]);
+          const open   = parseFloat(t.o);
+          const change = ((price - open) / open) * 100;
+          return { price, high, low, vol, change, mcap: null };
+        }
+      },
+      {
+        url: 'https://api.binance.com/api/v3/ticker/24hr?symbol=XRPUSDT',
+        parse: j => ({
+          price:  parseFloat(j.lastPrice),
+          high:   parseFloat(j.highPrice),
+          low:    parseFloat(j.lowPrice),
+          vol:    parseFloat(j.quoteVolume),
+          change: parseFloat(j.priceChangePercent),
+          mcap:   null
+        })
+      },
+      {
+        url: 'https://api.huobi.pro/market/detail/merged?symbol=xrpusdt',
+        parse: j => {
+          const t = j.tick;
+          if (!t) return null;
+          const price = parseFloat(t.close);
+          return {
+            price,
+            high:   parseFloat(t.high),
+            low:    parseFloat(t.low),
+            vol:    parseFloat(t.amount),
+            change: ((price - parseFloat(t.open)) / parseFloat(t.open)) * 100,
+            mcap:   null
+          };
+        }
+      }
+    ]);
+
+    if (!data) throw new Error('All XRP sources failed');
+
+    xrpSave({ t: Date.now(), v: data.price });
+
+    el('xrp-price').textContent = '$' + data.price.toFixed(4);
+    el('xrp-high').textContent  = '$' + data.high.toFixed(4);
+    el('xrp-low').textContent   = '$' + data.low.toFixed(4);
+    el('xrp-vol').textContent   = fmtM(data.vol);
+    el('xrp-mcap').textContent  = data.mcap ? fmtM(data.mcap) : '—';
+
+    const badge = el('xrp-badge');
+    badge.textContent = (data.change >= 0 ? '+' : '') + fmt(data.change) + '%';
+    badge.className   = 'badge ' + (data.change >= 0 ? 'badge-green' : 'badge-red');
+
+    // Chart: use Kraken OHLC for 24h history (no auth needed)
+    try {
+      const ohlc = await fetch('https://api.kraken.com/0/public/OHLC?pair=XRPUSD&interval=30', { signal: AbortSignal.timeout(6000) });
+      const oj = await ohlc.json();
+      const candles = oj.result && oj.result['XXRPZUSD'];
+      if (candles && candles.length > 2) {
+        // candle: [time, open, high, low, close, vwap, volume, count]
+        const recent = candles.slice(-48); // last 24h at 30min
+        const prices = recent.map(c => parseFloat(c[4]));
+        const labels = recent.map(c => {
+          const d = new Date(c[0] * 1000);
+          return d.toLocaleTimeString('nb-NO', {hour:'2-digit', minute:'2-digit'});
+        });
+        renderXRPChart(labels, prices);
+      } else throw new Error('no candles');
+    } catch(ce) {
+      // fall back to session readings
+      const sess = xrpHistory();
+      if (sess.length >= 2) {
+        renderXRPChart(
+          sess.map(h => new Date(h.t).toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'})),
+          sess.map(h => h.v)
+        );
+      }
+    }
+
+    setStatus('xrp', true);
+  } catch(e) {
+    console.error('XRP error', e);
+    el('xrp-price').textContent = '$—';
+    setStatus('xrp', false);
+  }
+}
+
+// ── Weather (Open-Meteo — no API key needed) ──────────────────────────────────
+const WX_CODES = {
+  0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️',
+  45:'🌫️', 48:'🌫️',
+  51:'🌦️', 53:'🌦️', 55:'🌦️',
+  61:'🌧️', 63:'🌧️', 65:'🌧️',
+  71:'❄️', 73:'❄️', 75:'❄️',
+  77:'🌨️', 80:'🌧️', 81:'🌧️', 82:'⛈️',
+  85:'🌨️', 86:'🌨️', 95:'⛈️', 96:'⛈️', 99:'⛈️'
+};
+const WX_DESCS = {
+  0:'Clear sky', 1:'Mainly clear', 2:'Partly cloudy', 3:'Overcast',
+  45:'Fog', 48:'Icy fog', 51:'Light drizzle', 53:'Drizzle', 55:'Dense drizzle',
+  61:'Light rain', 63:'Rain', 65:'Heavy rain',
+  71:'Light snow', 73:'Snow', 75:'Heavy snow', 77:'Snow grains',
+  80:'Rain showers', 81:'Rain showers', 82:'Violent showers',
+  85:'Snow showers', 86:'Heavy snow showers',
+  95:'Thunderstorm', 96:'Thunderstorm w/ hail', 99:'Thunderstorm w/ heavy hail'
+};
+
+async function loadWeather() {
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=59.9139&longitude=10.7522&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,visibility,uv_index,weather_code&hourly=temperature_2m,weather_code&timezone=Europe/Oslo&forecast_days=1&wind_speed_unit=ms';
+    const r = await fetch(url);
+    const d = await r.json();
+    const c = d.current;
+
+    el('wx-temp').textContent   = Math.round(c.temperature_2m);
+    el('wx-feels').textContent  = Math.round(c.apparent_temperature) + '°C';
+    el('wx-wind').textContent   = Math.round(c.wind_speed_10m) + ' m/s';
+    el('wx-humid').textContent  = c.relative_humidity_2m + '%';
+    el('wx-pres').textContent   = Math.round(c.surface_pressure) + ' hPa';
+    // visibility not shown in new layout
+    el('wx-uv').textContent     = c.uv_index ?? '—';
+    el('wx-icon').textContent   = WX_CODES[c.weather_code] || '🌡️';
+    el('wx-desc').textContent   = WX_DESCS[c.weather_code] || 'Unknown';
+
+    // Hourly forecast — next 6 hours in the new bar
+    const times  = d.hourly.time;
+    const temps  = d.hourly.temperature_2m;
+    const codes  = d.hourly.weather_code;
+    const nowH   = new Date(c.time).getHours();
+    const fc     = el('wx-forecast-bar');
+    fc.innerHTML = '';
+
+    let count = 0;
+    for (let i = 0; i < times.length && count < 6; i++) {
+      const h = new Date(times[i]).getHours();
+      if (h < nowH) continue;
+      const div = document.createElement('div');
+      div.className = 'fx-item';
+      div.innerHTML =
+        '<div class="fx-time">' + String(h).padStart(2,'0') + ':00</div>' +
+        '<div class="fx-icon">' + (WX_CODES[codes[i]] || '—') + '</div>' +
+        '<div class="fx-temp">' + Math.round(temps[i]) + '°</div>';
+      fc.appendChild(div);
+      count++;
+    }
+
+    setStatus('wx', true);
+  } catch(e) {
+    console.error('Weather error', e);
+    el('wx-desc').textContent = 'Could not load weather';
+    setStatus('wx', false);
+  }
+}
+
+// ── NRK RSS ───────────────────────────────────────────────────────────────────
+function renderNews(items) {
+  const list = el('news-list');
+  list.innerHTML = '';
+  items.slice(0, 9).forEach(item => {
+    const title   = item.title || '';
+    const link    = item.link  || item.url || '#';
+    const pubDate = item.pubDate || item.published || '';
+    const cat     = (item.categories && item.categories[0]) || item.category || 'Nyheter';
+    const dt      = pubDate ? new Date(pubDate).toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'}) : '';
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML =
+      '<div class="news-category">' + cat + '</div>' +
+      '<div class="news-headline">' + title + '</div>' +
+      '<div class="news-time">' + dt + '</div>';
+    div.onclick = () => window.open(link, '_blank');
+    list.appendChild(div);
+  });
+}
+
+async function fetchViaProxy(proxyUrl, feedUrl) {
+  const r = await fetch(proxyUrl + encodeURIComponent(feedUrl));
+  const text = await r.text();
+  // Try JSON first (rss2json style)
+  try {
+    const j = JSON.parse(text);
+    if (j.items && j.items.length) return j.items;
+    if (j.status === 'ok' && j.items) return j.items;
+  } catch(e) {}
+  // Parse XML
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(text, 'text/xml');
+  const nodes = Array.from(xml.querySelectorAll('item'));
+  if (!nodes.length) throw new Error('No items in feed');
+  return nodes.map(n => ({
+    title:    n.querySelector('title')?.textContent || '',
+    link:     n.querySelector('link')?.textContent || '#',
+    pubDate:  n.querySelector('pubDate')?.textContent || '',
+    categories: [n.querySelector('category')?.textContent || 'Nyheter']
+  }));
+}
+
+async function loadNews() {
+  const FEED = 'https://www.nrk.no/toppsaker.rss';
+  const proxies = [
+    'https://api.rss2json.com/v1/api.json?rss_url=',
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?'
+  ];
+
+  for (const proxy of proxies) {
+    try {
+      const items = await fetchViaProxy(proxy, FEED);
+      renderNews(items);
+      setStatus('news', true);
+      return;
+    } catch(e) {
+      console.warn('Proxy failed:', proxy, e.message);
+    }
+  }
+
+  // All proxies failed
+  console.error('All NRK proxies failed');
+  el('news-list').innerHTML = '<div class="news-loading" style="color:var(--red)">Kunne ikke hente nyheter</div>';
+  setStatus('news', false);
+}
+
+// ── Footer timestamp ──────────────────────────────────────────────────────────
+function updateFooter() {
+  el('footer-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString('nb-NO');
+}
+
+// ── Init + refresh ─────────────────────────────────────────────────────────────
+async function refreshAll() {
+  await Promise.allSettled([
+    loadXRP(),
+    loadWeather()
+  ]);
+  updateFooter();
+}
+
+async function refreshNews() {
+  await loadNews();
+  updateFooter();
+}
+
+refreshAll();
+refreshNews();
+setInterval(refreshAll, 5 * 60 * 1000);  // crypto + weather every 5 min
+setInterval(refreshNews, 5 * 60 * 1000); // news every 5 min (own timer)
+</script>
+
+<script>
+// ── WebGL Sphere ─────────────────────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('sphere-canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+
+  function resize() {
+    const wrap = document.getElementById('sphere-wrap');
+    const W = wrap.clientWidth;
+    const H = wrap.clientHeight;
+    canvas.width  = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ── Shaders ────────────────────────────────────────────────────────────────
+  const VS = `
+    attribute vec3 aPos;
+    attribute vec3 aNorm;
+    uniform mat4 uMVP;
+    uniform mat4 uModel;
+    varying vec3 vNorm;
+    varying vec3 vPos;
+    void main(){
+      vNorm = mat3(uModel) * aNorm;
+      vPos  = (uModel * vec4(aPos, 1.0)).xyz;
+      gl_Position = uMVP * vec4(aPos, 1.0);
+    }
+  `;
+
+  const FS = `
+    precision highp float;
+    varying vec3 vNorm;
+    varying vec3 vPos;
+    uniform vec3 uLightDir;   // main rim light (space blue, behind)
+    uniform vec3 uFillDir;    // soft fill
+    uniform float uTime;
+
+    void main(){
+      vec3 N = normalize(vNorm);
+      vec3 L = normalize(uLightDir);
+      vec3 F = normalize(uFillDir);
+
+      // Base sphere colour: very dark navy
+      vec3 base = vec3(0.015, 0.025, 0.06);
+
+      // Rim light — electric space blue, from behind
+      float rim  = max(0.0, dot(N, L));
+      float rim2 = pow(rim, 3.5);
+      vec3 rimCol = vec3(0.12, 0.45, 1.0) * rim2 * 2.8;
+
+      // Fresnel edge glow
+      vec3 view = normalize(vec3(0.0, 0.0, 1.0));
+      float fresnel = pow(1.0 - max(dot(N, view), 0.0), 3.5);
+      vec3 fresnelCol = vec3(0.15, 0.5, 1.0) * fresnel * 1.6;
+
+      // Subtle fill from above-right (warm-neutral)
+      float fill = max(0.0, dot(N, F)) * 0.18;
+      vec3 fillCol = vec3(0.7, 0.75, 0.9) * fill;
+
+      // Subtle slow-spinning noise shimmer (faked with sin)
+      float shimmer = sin(vPos.y * 4.0 + uTime * 0.4) * 0.02 + 0.02;
+
+      vec3 col = base + rimCol + fresnelCol + fillCol + shimmer;
+
+      // Atmospheric transparency at edges (alpha)
+      float alpha = 0.72 + fresnel * 0.25;
+
+      gl_FragColor = vec4(col, alpha);
+    }
+  `;
+
+  function mkShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  // ── Sphere geometry ────────────────────────────────────────────────────────
+  const SLICES = 64, STACKS = 64;
+  const pos = [], norm = [], idx = [];
+
+  for (let j = 0; j <= STACKS; j++) {
+    const phi = Math.PI * j / STACKS;
+    for (let i = 0; i <= SLICES; i++) {
+      const theta = 2 * Math.PI * i / SLICES;
+      const x = Math.sin(phi) * Math.cos(theta);
+      const y = Math.cos(phi);
+      const z = Math.sin(phi) * Math.sin(theta);
+      pos.push(x, y, z);
+      norm.push(x, y, z);
+    }
+  }
+  for (let j = 0; j < STACKS; j++) {
+    for (let i = 0; i < SLICES; i++) {
+      const a = j * (SLICES + 1) + i;
+      const b = a + SLICES + 1;
+      idx.push(a, b, a + 1, b, b + 1, a + 1);
+    }
+  }
+
+  function mkBuf(target, data, ctor) {
+    const b = gl.createBuffer();
+    gl.bindBuffer(target, b);
+    gl.bufferData(target, new ctor(data), gl.STATIC_DRAW);
+    return b;
+  }
+
+  const posBuf  = mkBuf(gl.ARRAY_BUFFER, pos,  Float32Array);
+  const normBuf = mkBuf(gl.ARRAY_BUFFER, norm, Float32Array);
+  const idxBuf  = mkBuf(gl.ELEMENT_ARRAY_BUFFER, idx, Uint16Array);
+
+  const aPos  = gl.getAttribLocation(prog, 'aPos');
+  const aNorm = gl.getAttribLocation(prog, 'aNorm');
+  const uMVP   = gl.getUniformLocation(prog, 'uMVP');
+  const uModel = gl.getUniformLocation(prog, 'uModel');
+  const uLight = gl.getUniformLocation(prog, 'uLightDir');
+  const uFill  = gl.getUniformLocation(prog, 'uFillDir');
+  const uTime  = gl.getUniformLocation(prog, 'uTime');
+
+  // ── Matrix helpers (column-major) ─────────────────────────────────────────
+  function identity() {
+    return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+  }
+  function perspective(fov, aspect, near, far) {
+    const f = 1 / Math.tan(fov / 2);
+    const m = new Float32Array(16);
+    m[0]=f/aspect; m[5]=f;
+    m[10]=(far+near)/(near-far); m[11]=-1;
+    m[14]=(2*far*near)/(near-far);
+    return m;
+  }
+  function translate(m, x, y, z) {
+    const r = new Float32Array(m);
+    r[12]=m[0]*x+m[4]*y+m[8]*z+m[12];
+    r[13]=m[1]*x+m[5]*y+m[9]*z+m[13];
+    r[14]=m[2]*x+m[6]*y+m[10]*z+m[14];
+    return r;
+  }
+  function rotY(m, a) {
+    const c=Math.cos(a), s=Math.sin(a);
+    const r = new Float32Array(m);
+    r[0]=m[0]*c+m[8]*s;   r[2]=-m[0]*s+m[8]*c;
+    r[4]=m[4]*c+m[12]*s;  r[6]=-m[4]*s+m[12]*c;
+    r[8]=m[8]*c+m[0]*s;   r[10]=-m[8]*s+m[0]*c; // fixed
+    // proper rotation
+    const m0=m[0],m4=m[4],m8=m[8];
+    const m1=m[1],m5=m[5],m9=m[9];
+    const m2=m[2],m6=m[6],m10=m[10];
+    r[0]=m0*c+m8*s;  r[8]=-m0*s+m8*c;
+    r[1]=m1*c+m9*s;  r[9]=-m1*s+m9*c;
+    r[2]=m2*c+m10*s; r[10]=-m2*s+m10*c;
+    return r;
+  }
+  function mul(a, b) {
+    const r = new Float32Array(16);
+    for (let i=0;i<4;i++) for(let j=0;j<4;j++)
+      for(let k=0;k<4;k++) r[i*4+j]+=a[i*4+k]*b[k*4+j];
+    return r;
+  }
+
+  // ── Render loop ────────────────────────────────────────────────────────────
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  let angle = 0;
+  const start = performance.now();
+
+  function draw(ts) {
+    resize();
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    const t  = (ts - start) / 1000;
+    angle += 0.0015;
+
+    const W = canvas.width, H = canvas.height;
+    const proj  = perspective(0.7, W/H, 0.1, 100);
+    const view  = translate(identity(), 0, 0, -2.8);
+    const model = rotY(identity(), angle);
+    const mvp   = mul(proj, mul(view, model));
+
+    gl.uniformMatrix4fv(uMVP,   false, mvp);
+    gl.uniformMatrix4fv(uModel, false, model);
+
+    // rim light from behind-left in world space
+    gl.uniform3f(uLight, -0.6, 0.2, -1.0);
+    // fill from above-right front
+    gl.uniform3f(uFill,  0.5, 0.8, 0.5);
+    gl.uniform1f(uTime, t);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, normBuf);
+    gl.enableVertexAttribArray(aNorm);
+    gl.vertexAttribPointer(aNorm, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
+    gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0);
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+
+</body>
+</html>
